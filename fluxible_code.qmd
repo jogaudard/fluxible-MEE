@@ -1,0 +1,1130 @@
+---
+title: "Code to produce the datasets used in the Fluxible manuscript"
+bibliography: /home/jga051/Dropbox/PhD/biblio_phd_zot.bib
+csl: /home/jga051/Documents/01_PhD/emerald-harvard.csl
+date: today
+format: pdf
+---
+
+Since LI-COR sent so much data and it is heavy to handle, I will prepare them in a separate document to avoid slowing down the document with the manuscript.
+
+```{r}
+#| echo: FALSE
+
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+options(tidyverse.quiet = TRUE)
+```
+
+# Data for validation
+
+## Data import
+```{r}
+#| label: osf-import
+#| message: true
+#| warning: false
+#| eval: true
+library(dataDownloader)
+
+get_file(
+    node = "srj24",
+    file = "validation_data.zip"
+)
+
+unzip("validation_data.zip")
+
+
+# saving space
+file.remove("validation_data.zip")
+```
+
+
+```{r}
+#| label: licor-import
+#| message: FALSE
+#| warning: false
+#| eval: true
+
+
+library(tidyverse)
+
+# some work needed to get around the triple header
+
+data_name1 <- read_csv(
+      "validation_data/licor_fluxes.csv",
+      n_max = 1,
+      col_names = FALSE,
+      show_col_types = FALSE,
+      progress = FALSE
+    )
+
+  data_name1 <- as.character(data_name1[1, ])
+
+  data_name2 <- read_csv(
+      "validation_data/licor_fluxes.csv",
+      skip = 1,
+      n_max = 1,
+      col_names = FALSE,
+      show_col_types = FALSE,
+      progress = FALSE
+    )
+
+  data_name2 <- as.character(data_name2[1, ])
+
+  data_name <- paste(
+    data_name1,
+    data_name2,
+    sep = "_"
+  )
+
+licor_fluxes_og <- read_csv(
+    "validation_data/licor_fluxes.csv",
+    skip = 3,
+    col_names = data_name
+)
+
+
+licor_fluxes <- licor_fluxes_og |>
+    mutate(
+        datetime = ymd_hms(`LI-8250_DATE_TIME initial_value`)
+    ) |>
+    select(!c(
+        `LI-8250_DATE_TIME initial_value`,
+        `LI-8250_PORT`,
+        `8250-01_PORT`
+        )) |>
+    arrange(datetime) |>
+    rowid_to_column("row_id") |>
+    pivot_longer(
+        !c(datetime, row_id),
+        names_to = "method",
+        values_to = "licor_flux"
+    )
+
+saveRDS(licor_fluxes, "validation_data/licor_fluxes.rds")
+# we will use RDS format to save intermediate objects in case it crashes
+rm(list = c(
+    "licor_fluxes", "licor_fluxes_og", "data_name", "data_name1", "data_name2"
+    ))
+```
+
+```{r}
+#| label: raw-import
+#| message: FALSE
+#| warning: false
+#| eval: true
+
+library(licoread)
+
+all_fluxes <- licoread(
+    "validation_data/export"
+    # sample = 10 # for testing with a smaller file
+    )
+
+# saveRDS in case it crashes
+# no need to rerun everything
+saveRDS(all_fluxes, "validation_data/licor_testing_fluxes.rds")
+
+# saving space on disk now that we have rds files
+unlink("validation_data/export", recursive = TRUE)
+```
+
+```{r}
+#| label: functions
+#| message: FALSE
+#| warning: false
+
+library(fluxible)
+# writing a fluxible wrapper function to save time
+
+flux_compare <- function(
+    conc_df,
+    fit_type,
+    start_cut = 20,
+    end_cut = 0,
+    conc_unit,
+    flux_unit,
+    method,
+    force_discard = c(),
+    rsquared_threshold = 0.7
+) {
+        
+    conc_fit <- conc_df |>
+    flux_fitting(
+        start_cut = start_cut,
+        end_cut = end_cut,
+        fit_type = fit_type
+        )
+
+    conc_flag <- conc_fit |>
+    flux_quality(
+        f_conc = f_conc,
+        instr_error = 10,
+        force_discard = force_discard,
+        #just getting rid of the start error since we have different gases and units
+        rsquared_threshold = rsquared_threshold,
+        error = 100000)
+
+    flux <- conc_flag |>
+    flux_calc(
+        slope_col = f_slope_corr,
+        f_datetime = f_datetime,
+        temp_air_col = CHAMBER_TA,
+        setup_volume = chamber_vol,
+        plot_area = plot_area,
+        atm_pressure = 1,
+        conc_unit = conc_unit,
+        flux_unit = flux_unit,
+        cols_keep = "f_quality_flag"
+    ) |>
+    mutate( # licor wants umol/m2/s
+        method = method,
+        f_flux = f_flux/3600
+    )
+
+    flux
+}
+
+```
+
+## LI-7810_CO2_DRY
+
+```{r}
+#| label: import-co2_7810
+#| message: FALSE
+#| warning: FALSE
+#| eval: true
+
+# all_fluxes <- readRDS("validation_data/licor_testing_fluxes.rds")
+
+
+list_gases(all_fluxes)
+
+co2_7810 <- licoread_to_fluxible(
+    all_fluxes,
+    focus_gas = "LI-7810_CO2_DRY",
+    datetime_col = c("LI-8250_DATE", "LI-8250_TIME")
+)
+
+co2_7810 <- co2_7810 |>
+     select(
+        f_fluxid,
+        f_datetime,
+        f_start,
+        f_end,
+        f_conc,
+        CHAMBER_TB,
+        CHAMBER_TA,
+        CHAMBER_TS_1,
+        "METADATA_VOLUME_TOTAL_cm+3",
+        "CHAMBER_AREA_cm+2"
+        ) |>
+        mutate(
+            chamber_vol = `METADATA_VOLUME_TOTAL_cm+3` * 0.001,
+            plot_area = `CHAMBER_AREA_cm+2` * 0.0001
+        ) |>
+        select(
+            !c(
+                "METADATA_VOLUME_TOTAL_cm+3",
+                "CHAMBER_AREA_cm+2"
+            )
+        )
+
+saveRDS(co2_7810, "validation_data/co2_7810.rds")
+
+```
+
+```{r}
+#| label: fluxible-co2_7810
+#| message: FALSE
+#| warning: FALSE
+#| eval: true
+
+# co2_7810 <- readRDS("validation_data/co2_7810.rds")
+    
+co2_7810_lm <- flux_compare(
+    co2_7810,
+    fit_type = "linear",
+    conc_unit = "ppm",
+    flux_unit = "micromol",
+    method = "LI-7810_FCO2_DRY LIN"
+)
+saveRDS(co2_7810_lm, "validation_data/co2_7810_lm.rds")
+
+
+co2_7810_hm <- flux_compare(
+    co2_7810,
+    fit_type = "exp_hm",
+    conc_unit = "ppm",
+    flux_unit = "micromol",
+    method = "LI-7810_FCO2_DRY"
+)
+saveRDS(co2_7810_hm, "validation_data/co2_7810_hm.rds")
+rm(co2_7810)
+
+
+```
+
+## LI-7810_CH4_DRY
+
+```{r}
+#| label: import-ch4_7810
+#| message: FALSE
+#| warning: FALSE
+#| eval: true
+
+# all_fluxes <- readRDS("validation_data/licor_testing_fluxes.rds")
+
+ch4_7810 <- licoread_to_fluxible(
+    all_fluxes,
+    focus_gas = "LI-7810_CH4_DRY",
+    datetime_col = c("LI-8250_DATE", "LI-8250_TIME")
+)
+
+ch4_7810 <- ch4_7810 |>
+     select(
+        f_fluxid,
+        f_datetime,
+        f_start,
+        f_end,
+        f_conc,
+        CHAMBER_TB,
+        CHAMBER_TA,
+        CHAMBER_TS_1,
+        "METADATA_VOLUME_TOTAL_cm+3",
+        "CHAMBER_AREA_cm+2"
+        ) |>
+        mutate(
+            chamber_vol = `METADATA_VOLUME_TOTAL_cm+3` * 0.001,
+            plot_area = `CHAMBER_AREA_cm+2` * 0.0001
+        ) |>
+        select(
+            !c(
+                "METADATA_VOLUME_TOTAL_cm+3",
+                "CHAMBER_AREA_cm+2"
+            )
+        )
+
+saveRDS(ch4_7810, "validation_data/ch4_7810.rds")
+
+
+```
+
+```{r}
+#| label: fluxible-ch4_7810
+#| message: FALSE
+#| warning: false
+#| eval: true
+
+
+# ch4_7810 <- readRDS("validation_data/ch4_7810.rds")
+
+ch4_7810_lm <- flux_compare(
+    ch4_7810,
+    fit_type = "linear",
+    conc_unit = "ppb",
+    flux_unit = "micromol",
+    method = "LI-7810_FCH4_DRY LIN"
+) |>
+    mutate(
+        f_flux = f_flux * 1000 # SFP has it in nanomol/m2/s
+    )
+saveRDS(ch4_7810_lm, "validation_data/ch4_7810_lm.rds")
+
+ch4_7810_hm <- flux_compare(
+    ch4_7810,
+    fit_type = "exp_hm",
+    conc_unit = "ppb",
+    flux_unit = "micromol",
+    method = "LI-7810_FCH4_DRY"
+) |>
+    mutate(
+        f_flux = f_flux * 1000 # SFP has it in nanomol/m2/s
+    )
+saveRDS(ch4_7810_hm, "validation_data/ch4_7810_hm.rds")
+rm(ch4_7810)
+
+```
+
+## LI-7820_N2O_DRY
+
+```{r}
+#| label: import-n2o_7820
+#| message: FALSE
+#| warning: FALSE
+#| eval: true
+
+# all_fluxes <- readRDS("validation_data/licor_testing_fluxes.rds")
+
+n2o_7820 <- licoread_to_fluxible(
+    all_fluxes,
+    focus_gas = "LI-7820_N2O_DRY",
+    datetime_col = c("LI-8250_DATE", "LI-8250_TIME")
+)
+
+n2o_7820 <- n2o_7820 |>
+     select(
+        f_fluxid,
+        f_datetime,
+        f_start,
+        f_end,
+        f_conc,
+        CHAMBER_TB,
+        CHAMBER_TA,
+        CHAMBER_TS_1,
+        "METADATA_VOLUME_TOTAL_cm+3",
+        "CHAMBER_AREA_cm+2"
+        ) |>
+        mutate(
+            chamber_vol = `METADATA_VOLUME_TOTAL_cm+3` * 0.001,
+            plot_area = `CHAMBER_AREA_cm+2` * 0.0001
+        ) |>
+        select(
+            !c(
+                "METADATA_VOLUME_TOTAL_cm+3",
+                "CHAMBER_AREA_cm+2"
+            )
+        )
+
+saveRDS(n2o_7820, "validation_data/n2o_7820.rds")
+
+```
+
+```{r}
+#| label: fluxible-n2o_7820
+#| message: FALSE
+#| warning: false
+#| eval: true
+
+# n2o_7820 <- readRDS("validation_data/n2o_7820.rds")
+
+n2o_7820_lm <- flux_compare(
+    n2o_7820,
+    fit_type = "linear",
+    conc_unit = "ppb",
+    flux_unit = "micromol",
+    method = "LI-7820_FN2O_DRY LIN"
+) |>
+    mutate(
+        f_flux = f_flux * 1000 # SFP has it in nanomol/m2/s
+    )
+saveRDS(n2o_7820_lm, "validation_data/n2o_7820_lm.rds")
+
+
+n2o_7820_hm <- flux_compare(
+    n2o_7820,
+    fit_type = "exp_hm",
+    conc_unit = "ppb",
+    flux_unit = "micromol",
+    method = "LI-7820_FN2O_DRY"
+) |>
+    mutate(
+        f_flux = f_flux * 1000 # SFP has it in nanomol/m2/s
+    )
+saveRDS(n2o_7820_hm, "validation_data/n2o_7820_hm.rds")
+
+rm(n2o_7820)
+
+```
+
+## LI-870_CO2_DRY
+
+```{r}
+#| label: import-co2_870
+#| message: FALSE
+#| warning: FALSE
+#| eval: true
+
+# all_fluxes <- readRDS("validation_data/licor_testing_fluxes.rds")
+
+co2_870 <- licoread_to_fluxible(
+    all_fluxes,
+    focus_gas = "LI-870_CO2_DRY",
+    datetime_col = c("LI-8250_DATE", "LI-8250_TIME")
+)
+
+co2_870 <- co2_870 |>
+     select(
+        f_fluxid,
+        f_datetime,
+        f_start,
+        f_end,
+        f_conc,
+        CHAMBER_TB,
+        CHAMBER_TA,
+        CHAMBER_TS_1,
+        "METADATA_VOLUME_TOTAL_cm+3",
+        "CHAMBER_AREA_cm+2"
+        ) |>
+        mutate(
+            chamber_vol = `METADATA_VOLUME_TOTAL_cm+3` * 0.001,
+            plot_area = `CHAMBER_AREA_cm+2` * 0.0001
+        ) |>
+        select(
+            !c(
+                "METADATA_VOLUME_TOTAL_cm+3",
+                "CHAMBER_AREA_cm+2"
+            )
+        )
+
+saveRDS(co2_870, "validation_data/co2_870.rds")
+
+rm(all_fluxes)
+
+```
+
+```{r}
+#| label: fluxible-co2_870
+#| message: FALSE
+#| warning: false
+#| eval: true
+
+# co2_870 <- readRDS("validation_data/co2_870.rds")
+
+co2_870_lm <- flux_compare(
+    co2_870,
+    fit_type = "linear",
+    conc_unit = "ppm",
+    flux_unit = "micromol",
+    method = "LI-870_FCO2_DRY LIN"
+)
+saveRDS(co2_870_lm, "validation_data/co2_870_lm.rds")
+
+
+co2_870_hm <- flux_compare(
+    co2_870,
+    fit_type = "exp_hm",
+    conc_unit = "ppm",
+    flux_unit = "micromol",
+    method = "LI-870_FCO2_DRY"
+)
+saveRDS(co2_870_hm, "validation_data/co2_870_hm.rds")
+rm(co2_870)
+
+```
+
+
+## Gathering
+
+```{r}
+#| label: gathering-sfp
+#| message: FALSE
+#| warning: false
+#| eval: true
+
+co2_7810_hm <- readRDS("validation_data/co2_7810_hm.rds")
+co2_7810_lm <- readRDS("validation_data/co2_7810_lm.rds")
+ch4_7810_hm <- readRDS("validation_data/ch4_7810_hm.rds")
+ch4_7810_lm <- readRDS("validation_data/ch4_7810_lm.rds")
+n2o_7820_hm <- readRDS("validation_data/n2o_7820_hm.rds")
+n2o_7820_lm <- readRDS("validation_data/n2o_7820_lm.rds")
+co2_870_hm <- readRDS("validation_data/co2_870_hm.rds")
+co2_870_lm <- readRDS("validation_data/co2_870_lm.rds")
+
+
+fluxible_fluxes_hm20 <- bind_rows(
+    co2_7810_hm,
+    co2_7810_lm,
+    ch4_7810_hm,
+    ch4_7810_lm,
+    n2o_7820_hm,
+    n2o_7820_lm,
+    co2_870_hm,
+    co2_870_lm
+) |>
+arrange(f_datetime) |>
+mutate(
+    .by = f_fluxid,
+    row_id = cur_group_id()
+)
+saveRDS(fluxible_fluxes_hm20, "validation_data/fluxible_fluxes_hm20.rds")
+
+licor_fluxes <- readRDS("validation_data/licor_fluxes.rds")
+# fluxible_fluxes_hm20 <- readRDS("validation_data/fluxible_fluxes_hm20.rds")
+rm(list = c(
+    "co2_7810_hm",
+    "co2_7810_lm",
+    "ch4_7810_hm",
+    "ch4_7810_lm",
+    "n2o_7820_hm",
+    "n2o_7820_lm",
+    "co2_870_hm",
+    "co2_870_lm"
+    ))
+
+comparison_fluxes_hm20 <- left_join(
+    licor_fluxes,
+    fluxible_fluxes_hm20,
+    by = join_by(row_id, method)
+    ) |>
+    # drop_na(f_flux) |>
+    mutate(
+        gas = str_extract(method, "\\w*[-]\\w*"),
+        model = case_when(
+            f_model == "exp_hm" ~ "Exponential",
+            f_model == "linear" ~ "Linear"
+        )
+    )
+
+saveRDS(comparison_fluxes_hm20, "validation_data/comparison_fluxes_hm20.rds")
+rm(list = c("licor_fluxes", "fluxible_fluxes_hm20"))
+```
+
+## Figure
+```{r}
+#| label: fig-sfp
+#| echo: false
+#| message: FALSE
+#| warning: false
+#| fig-width: 10
+#| fig-height: 8
+#| eval: true
+#| fig-cap: "Comparison of fluxes output between SoilFluxPro (SFP; y-axis) and the Fluxible R package (x-axis) for CO~2~, CH~4~ and N~2~O, measured with an LI-8250 soil chamber system using instruments LI-870, LI-7820, and LI-7810, with 8 8200-104 chambers. Continuous lines show the 1:1 line. Both linear (purple) and exponential (green) models were used while in Fluxible, the `exp_hm` model was used as it is the closest to the SFP workflow. The first 20 s of each measurement were cut before fitting in Fluxible, which is conservatively matching the deadband used in SoilFluxPro. The CH~4~ data could not be fitted with the HM model because of the absence of curvature."
+
+library(ggplot2)
+library(ggpmisc)
+library(viridis)
+
+
+
+# comparison_fluxes_hm20 <- readRDS("validation_data/comparison_fluxes_hm20.rds")
+
+# flux_flag_count(comparison_fluxes_hm20)
+
+gas_names <- c(
+  `LI-7810_FCH4_DRY` = "a) LI-7810 CH4",
+  `LI-7810_FCO2_DRY` = "b) LI-7810 CO2",
+  `LI-7820_FN2O_DRY` = "c) LI-7820 N2O",
+  `LI-870_FCO2_DRY` = "d) LI-870 CO2"
+)
+
+plot_sfp_hm <- comparison_fluxes_hm20 |>
+    filter(
+      method != "LI-7810_FCH4_DRY"
+    ) |>
+    ggplot(aes(f_flux, licor_flux, color = model)) +
+    theme_bw() +
+    scale_color_manual(values = c(
+        Exponential = "#0c9f0b",
+        Linear = "#bf28bd")
+    ) +
+    # theme(legend.position = c(0.87, 0.25)) +
+    # scale_fill_viridis(discrete = TRUE) +
+    geom_point() +
+    geom_abline(slope = 1, intercept = 0) +
+    stat_poly_line() +
+    # stat_correlation(use_label("cor.label", "R2", "n")) +
+    stat_poly_eq(use_label("R2", "n")) +
+    facet_wrap(gas ~ ., scales = "free", nrow = 2, labeller = as_labeller(gas_names)) +
+    labs(
+        title = "Comparison of flux estimates between SoilFluxPro and Fluxible",
+        x = "Fluxes calculated with Fluxible (exp_hm and linear model respectively)",
+        y = "Fluxes as provided by LI-COR (calculated with SFP)",
+        color = "Model"
+    )
+plot_sfp_hm
+```
+
+## Investigation of CH4
+
+```{r}
+#| label: ch4-investigation
+#| echo: true
+#| fig-width: 10
+#| fig-height: 10
+#| message: FALSE
+#| warning: false
+
+
+# comparison_fluxes_hm20 <- readRDS("validation_data/comparison_fluxes_hm20.rds")
+
+investigation_df <- comparison_fluxes_hm20 |>
+    filter(
+        gas == "LI-7810_FCH4_DRY"
+        & model == "Linear"
+        & f_quality_flag == "zero"
+    ) |>
+    mutate(
+        diff = abs(licor_flux - f_flux)
+    ) |>
+    slice_max(abs(licor_flux), n = 5)
+
+prob_id <- pull(investigation_df, f_fluxid)
+
+
+ch4_7810 <- readRDS("validation_data/ch4_7810.rds")
+
+
+ch4_prob <- ch4_7810 |>
+    filter(
+        f_fluxid %in% prob_id
+    )
+
+rm(ch4_7810)
+
+ch4_prob_slope <- flux_fitting(
+    ch4_prob,
+    start_cut = 5,
+    fit_type = "linear",
+    end_cut = 90
+)
+
+ch4_prob_flag <- flux_quality(
+    ch4_prob_slope,
+    instr_error = 10, # same parameters used before for consistency
+    error = 100000
+)
+
+flux_plot(
+    ch4_prob_flag,
+    f_ylim_upper = 9150,
+    f_ylim_lower = 3700,
+    facet_wrap_args = list(nrow = 1, scales = "free")
+)
+
+# flux_plot(
+#     ch4_prob_flag,
+#     f_ylim_upper = 2500,
+#     f_ylim_lower = 2000,
+#     # facet_wrap_args = list(nrow = 1, scales = "free"),
+#     print_plot = FALSE,
+#     output = "pdfpages"
+# )
+
+```
+
+It seems that some CH~4~ fluxes should have a different focus window.
+If it was a normal field campaign data processing we could isolate them and apply a different cut.
+But there are 16'000+ measurements, and the point is to compare the method anyway.
+
+Let's try anyway:
+```{r}
+#| label: ch4-investigationii
+#| message: FALSE
+#| warning: false
+#| fig-width: 10
+#| fig-height: 8
+
+
+# comparison_fluxes_hm20 <- readRDS("validation_data/comparison_fluxes_hm20.rds")
+
+zero_df <- comparison_fluxes_hm20 |>
+    filter(
+        gas == "LI-7810_FCH4_DRY"
+        & model == "Linear"
+        & f_quality_flag == "zero"
+    ) |>
+    select(f_fluxid, licor_flux, f_datetime) |>
+    arrange(f_datetime) |>
+    rowid_to_column("row_id") |>
+    select(!f_datetime)
+
+
+zero_id <- pull(zero_df, f_fluxid)
+
+
+ch4_7810 <- readRDS("validation_data/ch4_7810.rds")
+
+
+ch4_zero <- ch4_7810 |>
+    filter(
+        f_fluxid %in% zero_id
+    )
+
+
+ch4_redo <- flux_compare(
+    ch4_zero,
+    "linear",
+    start_cut = 40,
+    end_cut = 0,
+    conc_unit = "ppb",
+    flux_unit = "micromol",
+    method = "LI-7810_FCH4_DRY LIN",
+    rsquared_threshold = 0.01, # filtering with R2 square is not appropriate since SFP does not flag zero fluxes
+    force_discard = c(
+        "82m-0106-20210304073410", # positive in the second half
+                                   # focus window does not match
+        "82m-0106-20210326005440" # lots of noise at the start
+                                  # focus window does not match?
+    )
+    ) |>
+    mutate(
+        f_flux = f_flux * 1000 # SFP has it in nanomol/m2/s
+        )
+
+flux_flag_count(ch4_redo)
+
+ch4_test <- ch4_redo |>
+    select(f_fluxid, f_flux, f_datetime) |>
+    arrange(f_datetime) |>
+    rowid_to_column("row_id") |>
+    left_join(zero_df, by = c("row_id", "f_fluxid"))
+
+ch4_test |>
+    ggplot(aes(f_flux, licor_flux)) +
+    theme_bw() +
+    geom_point() +
+    geom_abline(slope = 1, intercept = 0)
+
+# ch4_test_prob <- ch4_test |>
+#     mutate(
+#         diff = abs(licor_flux - f_flux)
+#     ) |>
+#     slice_max(diff, n = 1)
+#     # slice_max(f_flux, n = 1)
+
+# prob_id <- pull(ch4_test_prob, f_fluxid)
+
+# ch4_7810 <- readRDS("validation_data/ch4_7810.rds")
+
+# ch4_prob <- ch4_7810 |>
+#     filter(
+#         f_fluxid %in% prob_id
+#     )
+
+# rm(ch4_7810)
+
+# ch4_prob_slope <- flux_fitting(
+#     ch4_prob,
+#     start_cut = 40,
+#     fit_type = "linear",
+#     end_cut = 0
+# )
+
+# ch4_prob_flag <- flux_quality(
+#     ch4_prob_slope,
+#     instr_error = 10, # same parameters used before for consistency
+#     error = 100000
+# )
+
+# flux_plot(
+#     ch4_prob_flag,
+#     f_ylim_upper = 16000,
+#     f_ylim_lower = 15800,
+#     facet_wrap_args = list(nrow = 1, scales = "free")
+# )
+
+ch4_7810_lm <- readRDS("validation_data/ch4_7810_lm.rds")
+
+ch4_ok <- ch4_7810_lm |>
+    filter(
+        !(f_fluxid %in% zero_id)
+    )
+
+flux_flag_count(ch4_ok)
+
+ch4_7810_lm <- bind_rows(ch4_ok, ch4_redo)
+
+flux_flag_count(ch4_7810_lm)
+
+saveRDS(ch4_7810_lm, "validation_data/ch4_7810_lmii.rds")
+
+rm(ch4_7810)
+```
+
+
+## Investigation of CO2 lin 870
+```{r}
+#| label: co2-investigation
+#| echo: true
+#| fig-width: 10
+#| fig-height: 10
+
+investigation_df <- comparison_fluxes_hm20 |>
+    filter(
+        gas == "LI-870_FCO2_DRY"
+        & model == "Linear"
+    ) |>
+    mutate(
+        diff = abs(licor_flux - f_flux)
+    ) |>
+    slice_max(diff, n = 1)
+
+prob_id <- pull(investigation_df, f_fluxid)
+
+
+co2_870 <- readRDS("validation_data/co2_870.rds")
+
+
+co2_prob <- co2_870 |>
+    filter(
+        f_fluxid %in% prob_id
+    )
+
+rm(co2_870)
+
+co2_prob_slope <- flux_fitting(
+    co2_prob,
+    start_cut = 20,
+    fit_type = "linear",
+    end_cut = 0
+)
+
+co2_prob_flag <- flux_quality(
+    co2_prob_slope,
+    instr_error = 10, # same parameters used before for consistency
+    error = 100000
+)
+
+
+flux_plot(
+    co2_prob_flag,
+    f_ylim_upper = 5000,
+    f_ylim_lower = -10000
+)
+
+```
+
+## Reprocessing after investigation
+
+
+```{r}
+#| label: fluxible-co2_870ii
+#| message: FALSE
+#| warning: false
+
+co2_870 <- readRDS("validation_data/co2_870.rds")
+
+co2_870_lm <- flux_compare(
+    co2_870,
+    fit_type = "linear",
+    conc_unit = "ppm",
+    flux_unit = "micromol",
+    method = "LI-870_FCO2_DRY LIN",
+    force_discard = "82m-0106-20210419053045" # has -9999 part of the flux
+                                              # probably instrument disconnected
+)
+saveRDS(co2_870_lm, "validation_data/co2_870_lmii.rds")
+
+rm(co2_870)
+
+```
+
+
+## Gathering II
+
+```{r}
+#| label: gathering-sfpii
+#| message: FALSE
+#| warning: false
+#| eval: true
+
+co2_7810_hm <- readRDS("validation_data/co2_7810_hm.rds")
+co2_7810_lm <- readRDS("validation_data/co2_7810_lm.rds")
+ch4_7810_hm <- readRDS("validation_data/ch4_7810_hm.rds")
+ch4_7810_lm <- readRDS("validation_data/ch4_7810_lmii.rds")
+n2o_7820_hm <- readRDS("validation_data/n2o_7820_hm.rds")
+n2o_7820_lm <- readRDS("validation_data/n2o_7820_lm.rds")
+co2_870_hm <- readRDS("validation_data/co2_870_hm.rds")
+co2_870_lm <- readRDS("validation_data/co2_870_lmii.rds")
+# co2_870_lm <- readRDS("validation_data/co2_870_lm.rds")
+
+
+fluxible_fluxes_hm20 <- bind_rows(
+    co2_7810_hm,
+    co2_7810_lm,
+    ch4_7810_hm,
+    ch4_7810_lm,
+    n2o_7820_hm,
+    n2o_7820_lm,
+    co2_870_hm,
+    co2_870_lm
+) |>
+arrange(f_datetime) |>
+mutate(
+    .by = f_fluxid,
+    row_id = cur_group_id()
+)
+saveRDS(fluxible_fluxes_hm20, "validation_data/fluxible_fluxes_hm20ii.rds")
+
+licor_fluxes <- readRDS("validation_data/licor_fluxes.rds")
+# fluxible_fluxes_hm20 <- readRDS("validation_data/fluxible_fluxes_hm20.rds")
+rm(list = c(
+    "co2_7810_hm",
+    "co2_7810_lm",
+    "ch4_7810_hm",
+    "ch4_7810_lm",
+    "n2o_7820_hm",
+    "n2o_7820_lm",
+    "co2_870_hm",
+    "co2_870_lm"
+    ))
+
+comparison_fluxes_hm20 <- left_join(
+    licor_fluxes,
+    fluxible_fluxes_hm20,
+    by = join_by(row_id, method)
+    ) |>
+    # drop_na(f_flux) |>
+    mutate(
+        gas = str_extract(method, "\\w*[-]\\w*"),
+        model = case_when(
+            f_model == "exp_hm" ~ "Exponential",
+            f_model == "linear" ~ "Linear"
+        )
+    )
+
+saveRDS(comparison_fluxes_hm20, "comparison_fluxes_hm20ii.rds")
+rm(list = c("licor_fluxes", "fluxible_fluxes_hm20"))
+```
+
+## Figure II
+```{r}
+#| label: fig-sfpii
+#| echo: false
+#| message: FALSE
+#| warning: false
+#| fig-width: 10
+#| fig-height: 8
+#| fig-cap: "Comparison of fluxes output between SoilFluxPro (SFP; y-axis) and the Fluxible R package (x-axis) for CO~2~, CH~4~ and N~2~O, measured with an LI-8250 soil chamber system using instruments LI-870, LI-7820, and LI-7810, with 8 8200-104 chambers. Continuous lines show the 1:1 line. Both linear (purple) and exponential (green) models were used while in Fluxible, the `exp_hm` model was used as it is the closest to the SFP workflow. The first 20 s of each measurement were cut before fitting in Fluxible, which is conservatively matching the deadband used in SoilFluxPro. The CH~4~ data could not be fitted with the HM model because of the absence of curvature."
+
+library(ggplot2)
+library(ggpmisc)
+library(viridis)
+
+
+
+# comparison_fluxes_hm20 <- readRDS("comparison_fluxes_hm20ii.rds")
+
+# flux_flag_count(comparison_fluxes_hm20)
+
+gas_names <- c(
+  `LI-7810_FCH4_DRY` = "a) LI-7810 CH4",
+  `LI-7810_FCO2_DRY` = "b) LI-7810 CO2",
+  `LI-7820_FN2O_DRY` = "c) LI-7820 N2O",
+  `LI-870_FCO2_DRY` = "d) LI-870 CO2"
+)
+
+plot_sfp_hm <- comparison_fluxes_hm20 |>
+    filter(
+      method != "LI-7810_FCH4_DRY"
+    ) |>
+    ggplot(aes(f_flux, licor_flux, color = model)) +
+    theme_bw() +
+    scale_color_manual(values = c(
+        Exponential = "#0c9f0b",
+        Linear = "#bf28bd")
+    ) +
+    # theme(legend.position = c(0.87, 0.25)) +
+    # scale_fill_viridis(discrete = TRUE) +
+    geom_point() +
+    geom_abline(slope = 1, intercept = 0) +
+    stat_poly_line() +
+    stat_correlation(use_label("cor.label", "R2", "n")) +
+    # stat_poly_eq(use_label("R2", "n")) +
+    facet_wrap(gas ~ ., scales = "free", nrow = 2, labeller = as_labeller(gas_names)) +
+    labs(
+        title = "Comparison of flux estimates between SoilFluxPro and Fluxible",
+        x = "Fluxes calculated with Fluxible (exp_hm and linear model respectively)",
+        y = "Fluxes as provided by LI-COR (calculated with SFP)",
+        color = "Model"
+    )
+plot_sfp_hm
+```
+
+## CH~4~ further investigation for revision
+
+```{r}
+#| label: ch4-reinvestigation
+#| echo: true
+#| message: FALSE
+#| warning: false
+
+ch4_7810 <- readRDS("validation_data/ch4_7810.rds")
+
+ch4_7810_fit <- flux_fitting(ch4_7810, start_cut = 20, fit_type = "linear")
+
+ch4_7810_flags <- flux_quality(ch4_7810_fit, instr_error = 10, error = 100000) #just getting rid of the start error since we have different gases and units
+
+# 3925 fluxes out of 16689 are flagged as zero, let's investigate that
+
+# isolate the zero flags
+
+zero_id <- ch4_7810_flags |>
+    filter(f_quality_flag == "zero") |>
+    distinct(f_fluxid) |>
+    pull(f_fluxid)
+
+ch4_7810_fit_a <- ch4_7810 |>
+    filter(
+        !(f_fluxid %in% zero_id)
+        ) |>
+    flux_fitting(start_cut = 20, fit_type = "linear")
+
+ch4_7810_flags_a <- flux_quality(ch4_7810_fit_a, instr_error = 10, error = 100000)
+
+ch4_7810_fit_b <- ch4_7810 |>
+    filter(
+        (f_fluxid %in% zero_id)
+        ) |>
+    flux_fitting(start_cut = 40, fit_type = "linear") # this has been investigated already and solved a big part of the issue
+
+ch4_7810_flags_b <- flux_quality(ch4_7810_fit_b, instr_error = 10, error = 100000)
+
+# still 2846 zero flags
+
+zero_id_b <- ch4_7810_flags_b |>
+    filter(f_quality_flag == "zero") |>
+    distinct(f_fluxid) |>
+    pull(f_fluxid)
+
+# random plotting of 100 fluxes to see what is going on
+random_id <- sample(zero_id_b, 100)
+
+ch4_7810_flags_b |>
+    filter(
+        f_fluxid %in% random_id
+    ) |>
+    flux_plot(
+        f_ylim_upper = 2100,
+        f_ylim_lower = 2000,
+        output = "longpdf",
+        y_text_position = 2050,
+        f_plotname = "random_100_ch4_zero_2"
+    )
+
+# those fluxes are very small and that affects the R2 
+
+ch4_7810_flags_c <- flux_quality(ch4_7810_fit_b,
+    instr_error = 10,
+    error = 100000,
+    rsquared_threshold = 0.01 # "deactivating" the R2 threshold
+    )
+
+```
+
+We will redo the data processing for CH~4~ with an R² threshold of 0.01, which will stop flagging those very low fluxes as "zero".
+It makes sense because (1) SFP does not do zero flagging, and (2) if a dataset contains only such low fluxes (as this is the case here) applying a high R² threshold might not be appropriate as it will discard or zero a large part of the fluxes.
+
+```{r}
+#| label: cleaning
+#| include: false
+
+unlink("validation_data", recursive = TRUE)
+```
+
+\newpage
+
+# Example data
+
+```{r}
+#| label: example-import
+#| message: true
+#| warning: false
+library(dataDownloader)
+
+get_file(
+    node = "srj24",
+    file = "ex_data.zip"
+)
+
+unzip("ex_data.zip")
+
+# saving space
+file.remove("ex_data.zip")
+```
+
+
