@@ -754,7 +754,7 @@ Note that different values than the default can be provided to `scale_x_datetime
 #| fig-height: 7
 #| echo: TRUE
 #| message: FALSE
-#| fig-cap: "Output of `flux_plot` for fluxid 54, 95, 100 and 101. [With quality flags and diagnostics from `flux_quality`, the slope at $t_0$ (continuous line), the model fit (dashed line), the linear fit (dotted line), and the raw gas concentration (dots). The colours show the quality flags (green for `ok`, red for `discard` and purple for `zero` with default settings) and cuts (same colour as `discard`). The gray vertical line indicates $t_0$ (a fitting parameter when using the `exp_zhao18` model, otherwise user defined in `flux_fitting`). The g-factor is calculated as slope/linear slope, and b is the b parameter inside the exponential model. Concentration is in ppm in this example. Due to poor quality (strong peak at the start), `flux_fitting` could not provide a decent fit for fluxid 101. This was detected by `flux_quality` which flagged it as discard."
+#| fig-cap: "Output of `flux_plot` for fluxid 54, 95, 100 and 101. With quality flags and diagnostics from `flux_quality`, the slope at $t_0$ (continuous line), the model fit (dashed line), the linear fit (dotted line), and the raw gas concentration (dots). The colours show the quality flags (green for `ok`, red for `discard` and purple for `zero` with default settings) and cuts (same colour as `discard`). The gray vertical line indicates $t_0$ (a fitting parameter when using the `exp_zhao18` model, otherwise user defined in `flux_fitting`). The g-factor is calculated as slope/linear slope, and b is the b parameter inside the exponential model. Concentration is in ppm in this example. Due to poor quality (strong peak at the start), `flux_fitting` could not provide a decent fit for fluxid 101. This was detected by `flux_quality` which flagged it as discard."
 flags_liahovden |>
   # we show only a sample of the plots in this example
   dplyr::filter(f_fluxid %in% c(54, 95, 100, 101)) |>
@@ -860,6 +860,7 @@ fits_liahovden_60 <- conc_liahovden |>
     end_cut = 60 # we decided to cut the last 60 seconds of the measurements
   )
 ```
+
 Then `flux_quality` again, possibly forcing a "zero" flag for fluxID 101:
 ```{r}
 #| label: flag_exp_cut
@@ -872,6 +873,7 @@ Then `flux_quality` again, possibly forcing a "zero" flag for fluxID 101:
       # force_zero = 101 # to replace flux 101 with 0 instead of discarding
     )
 ```
+
 And finally `flux_plot` again to check the output (@fig-plot_exp_cut).
 ```{r}
 #| label: fig-plot_exp_cut
@@ -879,7 +881,7 @@ And finally `flux_plot` again to check the output (@fig-plot_exp_cut).
 #| fig-height: 9
 #| echo: TRUE
 #| message: FALSE
-#| fig-cap: "Output of `flux_plot` for fluxid 54, 95, 100 and 101, after quality check. [Concentration is in ppm in this example."
+#| fig-cap: "Output of `flux_plot` for fluxid 54, 95, 100 and 101, after quality check. Concentration is in ppm in this example."
 flags_liahovden_60 |>
   dplyr::filter(f_fluxid %in% c(54, 95, 100, 101)) |>
   flux_plot(

@@ -1280,9 +1280,9 @@ flux dataset. This table is also printed as a side effect of
 The function \texttt{flux\_plot} provides plots for a visual assessment
 of the measurements, explicitly displaying the quality flags from
 \texttt{flux\_quality} and the cuts from \texttt{flux\_fitting}
-(\textbf{?@fig-explot}). Note that different values than the default can
-be provided to \texttt{scale\_x\_datetime} and \texttt{facet\_wrap} by
-providing lists of arguments to \texttt{scale\_x\_datetime\_args} and
+(Figure~\ref{fig-explot}). Note that different values than the default
+can be provided to \texttt{scale\_x\_datetime} and \texttt{facet\_wrap}
+by providing lists of arguments to \texttt{scale\_x\_datetime\_args} and
 \texttt{facet\_wrap\_args} respectively.
 
 \begin{Shaded}
@@ -1306,21 +1306,31 @@ providing lists of arguments to \texttt{scale\_x\_datetime\_args} and
 \end{Highlighting}
 \end{Shaded}
 
-!{[}Output of \texttt{flux\_plot} for fluxid 54, 95, 100 and 101.
-\phantomsection\label{fig-explot}\href{fluxible_MEE_files/figure-pdf/fig-explot-1.pdf}{With
-quality flags and diagnostics from \texttt{flux\_quality}, the slope at
-\(t_0\) (continuous line), the model fit (dashed line), the linear fit
-(dotted line), and the raw gas concentration (dots). The colours show
-the quality flags (green for \texttt{ok}, red for \texttt{discard} and
-purple for \texttt{zero} with default settings) and cuts (same colour as
-\texttt{discard}). The gray vertical line indicates \(t_0\) (a fitting
-parameter when using the \texttt{exp\_zhao18} model, otherwise user
-defined in \texttt{flux\_fitting}). The g-factor is calculated as
-slope/linear slope, and b is the b parameter inside the exponential
-model. Concentration is in ppm in this example. Due to poor quality
-(strong peak at the start), \texttt{flux\_fitting} could not provide a
-decent fit for fluxid 101. This was detected by \texttt{flux\_quality}
-which flagged it as discard.}
+\begin{figure}[H]
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{fluxible_MEE_files/figure-pdf/fig-explot-1.pdf}}
+
+}
+
+\caption{\label{fig-explot}Output of \texttt{flux\_plot} for fluxid 54,
+95, 100 and 101. With quality flags and diagnostics from
+\texttt{flux\_quality}, the slope at \(t_0\) (continuous line), the
+model fit (dashed line), the linear fit (dotted line), and the raw gas
+concentration (dots). The colours show the quality flags (green for
+\texttt{ok}, red for \texttt{discard} and purple for \texttt{zero} with
+default settings) and cuts (same colour as \texttt{discard}). The gray
+vertical line indicates \(t_0\) (a fitting parameter when using the
+\texttt{exp\_zhao18} model, otherwise user defined in
+\texttt{flux\_fitting}). The g-factor is calculated as slope/linear
+slope, and b is the b parameter inside the exponential model.
+Concentration is in ppm in this example. Due to poor quality (strong
+peak at the start), \texttt{flux\_fitting} could not provide a decent
+fit for fluxid 101. This was detected by \texttt{flux\_quality} which
+flagged it as discard.}
+
+\end{figure}%
 
 To export the plots as pdf without printing them in one's R session,
 which we recommend for large datasets, the code looks like this
@@ -1345,7 +1355,7 @@ name of the \texttt{slopes\_df} object will be used
 (\texttt{flags\_liahovden} in our case). The pdf file will be saved in a
 folder named \texttt{f\_quality\_plots}.
 
-\begin{tcolorbox}[enhanced jigsaw, opacitybacktitle=0.6, bottomrule=.15mm, breakable, colframe=quarto-callout-tip-color-frame, titlerule=0mm, toprule=.15mm, arc=.35mm, coltitle=black, title={Handling lots of data?}, bottomtitle=1mm, colback=white, colbacktitle=quarto-callout-tip-color!10!white, toptitle=1mm, rightrule=.15mm, left=2mm, leftrule=.75mm, opacityback=0]
+\begin{tcolorbox}[enhanced jigsaw, breakable, bottomrule=.15mm, colbacktitle=quarto-callout-tip-color!10!white, titlerule=0mm, coltitle=black, toprule=.15mm, colback=white, opacitybacktitle=0.6, left=2mm, rightrule=.15mm, bottomtitle=1mm, toptitle=1mm, colframe=quarto-callout-tip-color-frame, title={Handling lots of data?}, arc=.35mm, leftrule=.75mm, opacityback=0]
 
 Automated chambers produce a lot of data, and visually inspecting all
 the fluxes might not be a reasonable option. In such cases, it is
@@ -1403,7 +1413,7 @@ will pass the automated quality control but the user might have reasons
 to still discard them (or the opposite). That is what the
 \texttt{force\_discard}, \texttt{force\_ok}, \texttt{force\_lm} and
 \texttt{force\_zero} arguments are for. In our example
-(\textbf{?@fig-explot}), for the measurement with fluxID 101, the
+(Figure~\ref{fig-explot}), for the measurement with fluxID 101, the
 exponential model is not providing a good fit (resulting in the flux
 being discarded) due to some noise at the start of the measurement and
 it gets flagged to be discarded. The user could decide to replace that
@@ -1412,7 +1422,7 @@ is achieved with \texttt{force\_zero\ =\ 101}. Several fluxIDs can be
 provided to the \texttt{force\_} arguments by providing a vector:
 \texttt{force\_zero\ =\ c(100,\ 101)}.
 
-\begin{tcolorbox}[enhanced jigsaw, opacitybacktitle=0.6, bottomrule=.15mm, breakable, colframe=quarto-callout-tip-color-frame, titlerule=0mm, toprule=.15mm, arc=.35mm, coltitle=black, title={Redefining the focus window}, bottomtitle=1mm, colback=white, colbacktitle=quarto-callout-tip-color!10!white, toptitle=1mm, rightrule=.15mm, left=2mm, leftrule=.75mm, opacityback=0]
+\begin{tcolorbox}[enhanced jigsaw, breakable, bottomrule=.15mm, colbacktitle=quarto-callout-tip-color!10!white, titlerule=0mm, coltitle=black, toprule=.15mm, colback=white, opacitybacktitle=0.6, left=2mm, rightrule=.15mm, bottomtitle=1mm, toptitle=1mm, colframe=quarto-callout-tip-color-frame, title={Redefining the focus window}, arc=.35mm, leftrule=.75mm, opacityback=0]
 
 It might be sometime necessary to redefine the focus window (the portion
 of the flux used for model fitting) in case of consistent anomalies at
@@ -1479,7 +1489,7 @@ fluxID 101:
 \end{Shaded}
 
 And finally \texttt{flux\_plot} again to check the output
-(\textbf{?@fig-plot\_exp\_cut}).
+(Figure~\ref{fig-plot_exp_cut}).
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1500,12 +1510,21 @@ And finally \texttt{flux\_plot} again to check the output
 \end{Highlighting}
 \end{Shaded}
 
-!{[}Output of \texttt{flux\_plot} for fluxid 54, 95, 100 and 101, after
-quality check.
-\phantomsection\label{fig-plot_exp_cut}\href{fluxible_MEE_files/figure-pdf/fig-plot_exp_cut-1.pdf}{Concentration
-is in ppm in this example.}
+\begin{figure}[H]
 
-\begin{tcolorbox}[enhanced jigsaw, opacitybacktitle=0.6, bottomrule=.15mm, breakable, colframe=quarto-callout-tip-color-frame, titlerule=0mm, toprule=.15mm, arc=.35mm, coltitle=black, title={The importance of reporting}, bottomtitle=1mm, colback=white, colbacktitle=quarto-callout-tip-color!10!white, toptitle=1mm, rightrule=.15mm, left=2mm, leftrule=.75mm, opacityback=0]
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{fluxible_MEE_files/figure-pdf/fig-plot_exp_cut-1.pdf}}
+
+}
+
+\caption{\label{fig-plot_exp_cut}Output of \texttt{flux\_plot} for
+fluxid 54, 95, 100 and 101, after quality check. Concentration is in ppm
+in this example.}
+
+\end{figure}%
+
+\begin{tcolorbox}[enhanced jigsaw, breakable, bottomrule=.15mm, colbacktitle=quarto-callout-tip-color!10!white, titlerule=0mm, coltitle=black, toprule=.15mm, colback=white, opacitybacktitle=0.6, left=2mm, rightrule=.15mm, bottomtitle=1mm, toptitle=1mm, colframe=quarto-callout-tip-color-frame, title={The importance of reporting}, arc=.35mm, leftrule=.75mm, opacityback=0]
 
 Because of \texttt{fluxible}`s flexibility in choice of models, quality
 thresholds and focus window selection, it is crucial that users report
