@@ -57,15 +57,15 @@ aut <- Plume$new(tbl_authors)
 aut$set_corresponding_authors(1)
 ```
 
-`r aut$get_author_list("^a,^co")`
+<!-- `r aut$get_author_list("^a,^co")` -->
 
 ```{r}
 #| results: asis
-#| eval: true
+#| eval: false
 aut$get_affiliations() |> cat(sep = "\n\n")
 ```
 
-\*Correspondence to: `r aut$get_contact_details()`
+<!-- \*Correspondence to: `r aut$get_contact_details()` -->
 
 # Abstract {.unnumbered}
 
@@ -87,8 +87,8 @@ In addition to reproducibility, `fluxible` focuses on homogeneity and automation
 
 The data used in the validation (Section 3) and those used in the data preparation example (Appendix B) can be downloaded from Open Science Framework: [osf.io/srj24](https://osf.io/srj24/).
 The data for the detailed example (Appendix A) and the workflow with two gases (Appendix C) are part of `fluxible`.
-[The code of the package is available on GitHub: [github.com/Plant-Functional-Trait-Course/fluxible](https://github.com/Plant-Functional-Trait-Course/fluxible).
-[The code for the validation section and figures production is available on GitHub: [github.com/jogaudard/fluxible-MEE](https://github.com/jogaudard/fluxible-MEE).
+The code of the package is available on GitHub: [github.com/Plant-Functional-Trait-Course/fluxible](https://github.com/Plant-Functional-Trait-Course/fluxible).
+The code for the validation section and figures production is available on GitHub: [github.com/jogaudard/fluxible-MEE](https://github.com/jogaudard/fluxible-MEE).
 
 # Introduction
 
@@ -959,10 +959,10 @@ str(fluxes_liahovden_60, width = 70, strict.width = "cut")
 
 CO~2~ flux chambers and tents can be used to measure net ecosystem exchange (NEE) and ecosystem respiration (ER) if the user manipulates the light levels in the chamber.
 The difference between the two is the gross primary production (GPP), which cannot be measured isolated from ER but is often a variable of interest.
-The function `flux_diff` calculates the difference between two types of fluxes as $diff = type\_a - type\_b$ and returns a dataset in long format, with type_a, type_b and diff as flux type.
+The function `flux_diff` calculates the difference between two types of fluxes as $diff = type\_a - type\_b$ and returns a dataset in long format, with `type_a`, `type_b` and `diff` as flux type.
 Any variables specified by the user (`cols_keep` argument) will be filled with their values corresponding to the type_a measurement.
-Other type of flux than type_a and type_b, if present in the dataset (e.g. light response curves, soil respiration) are kept.
-Each type_a and type_b measurements need to be paired together for this calculation.
+Other type of flux than `type_a` and `type_b`, if present in the dataset (e.g. light response curves, soil respiration) are kept.
+Each `type_a` and `type_b` measurements need to be paired together for this calculation.
 The `id_cols` argument specifies which columns should be used for pairing (e.g., date, campaign).
 The `flux_diff` function can be used to calculate GPP in the case of CO$_2$ fluxes, or transpiration with H$_2$O fluxes.
 
@@ -1073,7 +1073,6 @@ The `flux_fitting` function is the step after `flux_match` and its input should 
 - A column indicating the end of each measurement in datetime format (`yyyy-mm-dd hh:mm:ss`)
 
 The datetime column will be used to model the concentration over time, the unique ID to identify the different flux measurements, and the start and end are needed to apply the cuts on the focus window, when plotting, and determining the length of the flux to provide quality flags.
-Row numbers could be used at the conditions that i) the gas concentration measurement frequency is a constant, and ii) there are no missing data.
 
 ### Defining your dataset
 
@@ -1346,7 +1345,7 @@ str(ch4_dry, width = 70, strict.width = "cut", give.attr = FALSE)
 # Using `fluxible` with two gases measured simultaneously {.appendix #sec-twogases}
 
 In this example we will process the `raw_twogases` dataset which contains both CO~2~ and CH~4~ concentrations measured simultaneously.
-The aim is a single dataset of fluxes in which the CH~4~ fluxes where also discarded when the CO~2~ fluxes were discarded.
+The aim is a single dataset of fluxes in which the CH~4~ fluxes were also discarded when the CO~2~ fluxes were discarded.
 
 The concept is that we will treat the dataset twice, once for each gas, and then join them again in the end.
 Because `f_fluxid` is produced in chronological order based on start datetime in `field_record`, the fluxes measured at the same time have the same `f_fluxid`.
@@ -1599,15 +1598,15 @@ Where $P_i$ are the predicated values and $O_i$ the observed.
 The raw data are fitted to a series of simpler models whose parameters are used as starting points for `optim`.
 In the following steps, the suffix $\_est$ (for "estimated") indicates the starting point of the corresponding parameter.
 
-$C_m$ is estimated ($C_{m\_est}$) as either the lowest CO~2~ concentration value in case of an overall decreasing CO~2~ concentration in the chamber, or the highest in case of an increasing concentration.
+$C_m$ is estimated ($C_{m\_est}$) as either the lowest gas concentration value in case of an overall decreasing gas concentration in the chamber, or the highest in case of an increasing concentration.
 
 $t_0$ is defined as $C(t_0) = C_0$.
 $t_0$ can only be positive as it is not defined before the measurement starts.
-$t_{z\_est}$ is estimated as the time when observed CO~2~ concentration is the closest to $C_0$.
+$t_{z\_est}$ is estimated as the time when observed gas concentration is the closest to $C_0$.
 To avoid undesirable effects of outliers, a rolling mean (15 seconds interval by default) is applied to gas concentration data.
 Only the first half of the measurement is used to estimate $t_{z\_est}$ to avoid using gas concentration data situated after a peak or a dip.
 
-$b_{est}$ can be calculated using $C_{m\_est}$ and $C_0$ and an arbitrary time $t_b=t_0-b_{window}$ (10 seconds as default parameter) and an estimation of $C(t_b)$ (called $C_b$) by looking at the observed CO~2~ value at $t_b$:
+$b_{est}$ can be calculated using $C_{m\_est}$ and $C_0$ and an arbitrary time $t_b=t_0-b_{window}$ (10 seconds as default parameter) and an estimation of $C(t_b)$ (called $C_b$) by looking at the observed gas value at $t_b$:
 
 $$
 b_{est}=\log(|\frac{C_b-C_{m\_est}}{C_0-C_{m\_est}}|) \times \frac{1}{b_{window}}
@@ -1619,7 +1618,7 @@ Following the same idea as for $b_{est}$, $a_{est}$ can be calculated using the 
 $$
 a_{est}=\frac{(C_a - C_{m\_est} - (C_0 - C_{m\_est}) * \exp(-b_{est} * (t_a - t_{z\_est})))}{(t_a - t_{z\_est})}
 $$
-$t_a$ being the length of the flux minus $a_{window}$ and $C_a$ the observed CO~2~ concentration at $t_a$.
+$t_a$ being the length of the flux minus $a_{window}$ and $C_a$ the observed gas concentration at $t_a$.
 
 
 Finally, the `optim()` function is run on @eq-rmse with predicted values from @eq-zhao and starting points provided as described above.
@@ -1659,8 +1658,8 @@ Finally, the `optim()` function is run on @eq-rmse with predicted values from @e
 |R^2 < `rsquared_threshold` & p-value $\geq$ `pvalue_threshold`                 |The fit is bad and                                     |`zero`         |0                                            |
 |                                                                               |the concentration is not changing over time.           |               |                                             |
 +-------------------------------------------------------------------------------+-------------------------------------------------------+---------------+---------------------------------------------+
-|R^2 < `rsquared_threshold` & p-value < `pvalue_threshold` &                    |Slope is below the minimal detectable slope.           |`zero`         |0                                            |
-|`f_slope` $\leq$ `f_min_slope`                                                 |                                                       |               |                                             |
+|R^2 < `rsquared_threshold` & p-value < `pvalue_threshold` &                    |The fit is bad and                                     |`zero`         |0                                            |
+|`f_slope` $\leq$ `f_min_slope`                                                 |the slope is below the minimal detectable slope.       |               |                                             |
 +-------------------------------------------------------------------------------+-------------------------------------------------------+---------------+---------------------------------------------+
 |R^2 < `rsquared_threshold` & p-value < `pvalue_threshold` &                    |The fit is bad.                                        |`discard`      |`NA`                                         |
 |`f_slope` > `f_min_slope`                                                      |                                                       |               |                                             |
@@ -1691,12 +1690,12 @@ Finally, the `optim()` function is run on @eq-rmse with predicted values from @e
 +-------------------------------------------------------------------------------+-------------------------------------------------------+---------------+---------------------------------------------+
 |`is.na(f_slope) = TRUE`                                                        |Model could not be fit to gas concentration data.      |`no_slope`     |`NA`                                         |
 +-------------------------------------------------------------------------------+-------------------------------------------------------+---------------+---------------------------------------------+
-|`f_gfactor` > `gfactor_threshold`                                              |Slope is too different from linear slope.              |`discard`      |`NA`                                         |
-|                                                                               |                                                       |               |                                             |
+|`f_gfactor` > `gfactor_threshold`                                              |Slope is too different from linear slope               |`discard`      |`NA`                                         |
+|                                                                               |and above the minimal detectable slope.                |               |                                             |
 |& `f_slope_lm` > `f_min_slope`                                                 |                                                       |               |                                             |
 +-------------------------------------------------------------------------------+-------------------------------------------------------+---------------+---------------------------------------------+
-|`f_gfactor` > `gfactor_threshold`                                              |Slope is below the minimal detectable slope.           |`zero`         |0                                            |
-|                                                                               |                                                       |               |                                             |
+|`f_gfactor` > `gfactor_threshold`                                              |Slope is too different from linear slope               |`zero`         |0                                            |
+|                                                                               |and is below the minimal detectable slope.             |               |                                             |
 |& `f_slope_lm` $\leq$ `f_min_slope`                                            |                                                       |               |                                             |
 +-------------------------------------------------------------------------------+-------------------------------------------------------+---------------+---------------------------------------------+
 |$R^2 \geq$ `rsquared_threshold`                                                |The fit is good.                                       |`ok`           |As estimated by `flux_fitting`               |
@@ -1704,8 +1703,8 @@ Finally, the `optim()` function is run on @eq-rmse with predicted values from @e
 |$R^2$ < `rsquared_threshold` & p-value $\geq$ `pvalue_threshold`               |The fit is bad and                                     |`zero`         |0                                            |
 |                                                                               |the concentration is not changing over time.           |               |                                             |
 +-------------------------------------------------------------------------------+-------------------------------------------------------+---------------+---------------------------------------------+
-|$R^2$ < `rsquared_threshold` & p-value < `pvalue_threshold` &                  |Slope is below the minimal detectable slope.           |`zero`         |0                                            |
-|`f_slope` $\leq$ `f_min_slope`                                                 |                                                       |               |                                             |
+|$R^2$ < `rsquared_threshold` & p-value < `pvalue_threshold` &                  |The fit is bad and                                     |`zero`         |0                                            |
+|`f_slope` $\leq$ `f_min_slope`                                                 |the slope is below the minimal detectable slope.       |               |                                             |
 +-------------------------------------------------------------------------------+-------------------------------------------------------+---------------+---------------------------------------------+
 |$R^2$ < `rsquared_threshold` & p-value < `pvalue_threshold` &                  |The fit is bad.                                        |`discard`      |`NA`                                         |
 |`f_slope` > `f_min_slope`                                                      |                                                       |               |                                             |
@@ -1736,12 +1735,12 @@ Finally, the `optim()` function is run on @eq-rmse with predicted values from @e
 +-------------------------------------------------------------------------------+-------------------------------------------------------+---------------+---------------------------------------------+
 |`is.na(f_slope) = TRUE`                                                        |Model could not be fit to gas concentration data.      |`no_slope`     |`NA`                                         |
 +-------------------------------------------------------------------------------+-------------------------------------------------------+---------------+---------------------------------------------+
-|`f_gfactor` > `gfactor_threshold`                                              |Slope is too different from linear slope.              |`discard`      |`NA`                                         |
-|                                                                               |                                                       |               |                                             |
+|`f_gfactor` > `gfactor_threshold`                                              |Slope is too different from linear slope               |`discard`      |`NA`                                         |
+|                                                                               |and above the minimal detectable slope.                |               |                                             |
 |& `f_slope_lm` > `f_min_slope`                                                 |                                                       |               |                                             |
 +-------------------------------------------------------------------------------+-------------------------------------------------------+---------------+---------------------------------------------+
-|`f_gfactor` > `gfactor_threshold`                                              |Slope is below the minimal detectable slope.           |`zero`         |0                                            |
-|                                                                               |                                                       |               |                                             |
+|`f_gfactor` > `gfactor_threshold`                                              |Slope is too different from linear slope and           |`zero`         |0                                            |
+|                                                                               |below the minimal detectable slope.                    |               |                                             |
 |& `f_slope_lm` $\leq$ `f_min_slope`                                            |                                                       |               |                                             |
 +-------------------------------------------------------------------------------+-------------------------------------------------------+---------------+---------------------------------------------+
 |($|b| \geq$ `b_threshold` or                                                   |The fit is bad & the concentration is changing over    |`discard`      |`NA`                                         |
@@ -1802,7 +1801,7 @@ Finally, the `optim()` function is run on @eq-rmse with predicted values from @e
 +-----------------+--------------------------------------------------------------------------------------------------------+
 |`flux_gpp`       |Same as `flux_diff` but specific to GPP (superseded, `flux_diff` offers more flexibility)               |
 +-----------------+--------------------------------------------------------------------------------------------------------+
-|`flux_lrc`       |Standardises CO2 fluxes at fixed PAR values                                                             |
+|`flux_lrc`       |Standardises CO~2~ fluxes at fixed PAR values                                                           |
 +-----------------+--------------------------------------------------------------------------------------------------------+
 |`flux_units`     |Unit conversion coefficient for fluxes (used inside `flux_calc`)                                        |
 +-----------------+--------------------------------------------------------------------------------------------------------+
