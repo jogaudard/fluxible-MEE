@@ -348,7 +348,8 @@ plot_sfp_hm <- comparison_fluxes_hm20 |>
         color = "Model"
     )
 plot_sfp_hm
-ggsave("revision/figure_4.png", width = 10, heigh = 8)
+ggsave("figures/figure_4.png", width = 10, heigh = 8)
+unlink("comparison_fluxes_hm20ii.rds") # cleaning
 ```
 
 # Comparison with other packages

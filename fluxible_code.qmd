@@ -4,6 +4,7 @@ bibliography: /home/jga051/Dropbox/PhD/biblio_phd_zot.bib
 csl: /home/jga051/Documents/01_PhD/emerald-harvard.csl
 date: today
 format: pdf
+author: Joseph Gaudard
 ---
 
 Since LI-COR sent so much data and it is heavy to handle, I will prepare them in a separate document to avoid slowing down the document with the manuscript.
