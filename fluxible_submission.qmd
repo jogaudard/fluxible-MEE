@@ -36,17 +36,7 @@ crossref:
 <!-- 3811 words total -->
 <!-- word limit including references 3000-4000 -->
 
-<!-- Potential reviewer -->
-<!-- Emily Pickering Pedersen -->
-<!-- Andrew Rupiper -->
-<!-- Camille Rousset -->
-<!-- Hanna Lee -->
 
-<!-- Advise not as reviewer -->
-<!-- Karelle Rheault -->
-<!-- Jesper Riis Christiansen -->
-<!-- Klaus Steenberg Larsen -->
-<!-- Matthias Cuntz -->
 
 
 ```{r}
@@ -67,15 +57,15 @@ aut <- Plume$new(tbl_authors)
 aut$set_corresponding_authors(1)
 ```
 
-<!-- `r aut$get_author_list("^a,^co")` -->
+`r aut$get_author_list("^a,^co")`
 
 ```{r}
 #| results: asis
-#| eval: false
+#| eval: true
 aut$get_affiliations() |> cat(sep = "\n\n")
 ```
 
-<!-- \*Correspondence to: `r aut$get_contact_details()` -->
+\*Correspondence to: `r aut$get_contact_details()`
 
 # Abstract {.unnumbered}
 
@@ -97,58 +87,30 @@ In addition to reproducibility, `fluxible` focuses on homogeneity and automation
 
 The data used in the validation (Section 3) and those used in the data preparation example (Appendix B) can be downloaded from Open Science Framework: [osf.io/srj24](https://osf.io/srj24/).
 The data for the detailed example (Appendix A) and the workflow with two gases (Appendix C) are part of `fluxible`.
-<!-- [The code of the package is available on GitHub:]{.mark} [github.com/Plant-Functional-Trait-Course/fluxible](https://github.com/Plant-Functional-Trait-Course/fluxible). -->
-<!-- [The code for the validation section and figures production will be available on GitHub at publication]{.mark} -->
+[The code of the package is available on GitHub: [github.com/Plant-Functional-Trait-Course/fluxible](https://github.com/Plant-Functional-Trait-Course/fluxible).
+[The code for the validation section and figures production is available on GitHub: [github.com/jogaudard/fluxible-MEE](https://github.com/jogaudard/fluxible-MEE).
 
 # Introduction
 
 <!-- 626 words -->
 
-<!-- {{< include introduction.qmd >}} -->
 
-<!-- Carbon and water cycles are crucial for biosphere functioning and strongly influence global climate dynamics (REF). -->
 Measuring ecosystem gas fluxes (hereafter fluxes) quantifies how resources are allocated in ecosystems and provides crucial information to predict future global warming [@bastvikenCriticalMethodNeeds2022].
-<!-- While a large portion of ecosystem ecology focuses on carbon fluxes, the methods to measure and process the data are the same for all terrestrial fluxes (REF). -->
-<!-- However, there are numerous different methods to measure carbon (and other gas) fluxes and the resulting data are  complex to process, making datasets comparisons complicated. -->
-<!-- Eddy covariance flux towers are used for landscape scale monitoring measurements, but have a spatial definition too coarse to use in experimental setups. -->
-At the plot scale, fluxes are commonly measured using closed-loop chamber systems (@fig-chambers; hereafter chambers), allowing comparison [across environmental gradients and experimental treatments]{.mark} [@maesEnvironmentalDriversIncreased2024; @arnoneLargeDaylightGeodesic2003].
-<!-- Fluxes from closed chambers and tents are calculated from an estimation of the gas concentration changing rate over time. -->
-<!-- The changing rate of gas concentration over time inside the chamber is the basis for flux calculation. -->
-<!-- An increase in gas concentration inside the chamber shows a gas emission from the ecosystem, while a decrease of concentration shows an uptake. -->
-<!-- To calculate the exact flux, the changing rate of gas concentration inside the chamber has to be estimated -->
-<!-- The calculation of the exact flux is based on the changing rate of gas concentration inside the chamber. -->
+At the plot scale, fluxes are commonly measured using closed-loop chamber systems (@fig-chambers; hereafter chambers), allowing comparison across environmental gradients and experimental treatments [@maesEnvironmentalDriversIncreased2024; @arnoneLargeDaylightGeodesic2003].
 The flux calculation (i.e., the amount of gas per time per area) is based on the rate of change of gas concentration inside the chamber.
 This rate is the derivative of a function $C(t)$ describing the gas concentration over time.
-<!-- How this changing rate is estimated can induce several bias. -->
-<!-- Various methods are used to approximate $C(t)$. -->
 However, various methods are used to approximate $C(t)$, and the choice of method can introduce biases and - if not explicitly described - increase the likelihood of misinterpretations between processed fluxes [@johannessonOptimizingClosurePeriod2024;  @pihlatieComparisonStaticChambers2013; @forbrichComparisonLinearExponential2010].
 
-<!-- The choice of method can introduce biases, so misinterpretations between processed fluxes may arise when this step is not explicitly described [@johannessonOptimizingClosurePeriod2024,  @pihlatieComparisonStaticChambers2013, @forbrichComparisonLinearExponential2010]. -->
-<!-- While this estimation is one technical step in transforming raw data into analysis-ready gas fluxes, the different methods can have different biases. -->
-<!-- Therefore, not explicitly describing this step can lead to misinterpretation of the data when comparing datasets treated differently. -->
-<!-- Using Open Science research principles to calculate fluxes offers a way to avoid such misinterpretations [@wilkinsonFAIRGuidingPrinciples2016; @vicente-saezOpenScienceNow2018; @strommeApplyingPromotingOpen2021; @halbritterHandbookStandardizedField2020]. -->
 The way forward is to provide fully reproducible and transparent tools to calculate ecosystem gas fluxes.
-<!-- according to Open Science research principles, in particular reproducibility and transparency [@wilkinsonFAIRGuidingPrinciples2016; @vicente-saezOpenScienceNow2018; @strommeApplyingPromotingOpen2021; @halbritterHandbookStandardizedField2020]. -->
 Such tools and workflows also need to be flexible enough to be compatible across various field setups and gases.
-<!-- , as well as transparent and reproducible to allow proper comparison of datasets. -->
 This is what the `fluxible` R package, presented in this paper, aims for.
 
-<!-- Obtaining a clean dataset of fluxes goes beyond estimating the rate of change in gas concentration. -->
-<!-- Obtaining a clean dataset of fluxes is a full workflow that goes beyond estimating the rate of change in gas concentration inside a closed-loop chamber. -->
 The process of obtaining an analysis-ready flux dataset entails several crucial steps.
-<!-- Often the gas concentration will be recorded as one continuous file for the day or campaign, and the start of each measurements recorded on a separate document, needing  -->
-<!-- First the raw field measurements are cut at the correct length and attributed to metadata. -->
-First, the raw field measurements are [trimmed of irrelevant sections in the case of continuous logging, or gathered if they were recorded separately,]{.mark} and attributed to metadata.
-<!-- Second a model is fit to the data and the quality of the fit and is assessed before further calculations. -->
-Second, an appropriate model is fit to the data and [fit quality is]{.mark} assessed.
+First, the raw field measurements are trimmed of irrelevant sections in the case of continuous logging, or gathered if they were recorded separately, and attributed to metadata.
+Second, an appropriate model is fit to the data and fit quality is assessed.
 Third, the fluxes are calculated from the model output.
 This step must accommodate different field setups (@fig-chambers), such as adjusting the volume input for a fixed or variable chamber volume.
-[Indeed, the chamber volume often varies due to microtopography, and this variation should be accounted for in flux calculations.]{.mark}
-<!-- [Indeed, the chamber volume can differ due to micro topography, which should be accounted for in flux calculations.]{.mark} -->
-<!-- For example, soil respiration chambers (@fig-soil) require the chamber volume as a variable while setups with a fixed chamber volume require to input it as a constant. -->
-<!-- Chambers which are recording additional environmental data besides gas concentration (@fig-threed) need processing of those data, with the same measurement window that was applied to the gas concentration. -->
-<!-- And tents (@fig-tent), as they are difficult to setup and often suffer from non negligeable leakage, require an approach that accounts for unclarirty around the true start of the measurements. -->
-<!-- This can be done by inputing the start of the measurement as a parameter in the optimization of the fit, as well as segmenting the measurement based on other environmental data. -->
+Indeed, the chamber volume often varies due to microtopography, and this variation should be accounted for in flux calculations.
 
 
 ::: {#fig-chambers layout-nrow=2}
@@ -162,406 +124,85 @@ This step must accommodate different field setups (@fig-chambers), such as adjus
 Field-based ecosystem gas flux measurements. [-@fig-soil]) soil respiration is measured using a PVC pipe chamber. [-@fig-threed]) closed-loop plexiglass chamber to measure ecosystem carbon and water fluxes. The chamber has sensors to measure different environmental data, which should be processed simultaneously with the fluxes. [-@fig-tent]) Flux tent used for measurements in ecosystems with taller vegetation.
 :::
 
-<!-- Several methods have been developed to estimate ecosystem gas fluxes from static chamber measurements. -->
-<!-- Gas analysers are used to measure gas fluxes on the field. -->
-<!-- They produce a dataset of gas concentration (some of them measure several gases simultaneoulsy) over time. -->
-<!-- Fluxes (i.e. the amount of gas per unit of time per unit of surface of the ecosystem) are calculated from the slope of the rate of change of gas concentration inside the chamber over time. -->
-<!-- If the gas concentration can be described as a function of time, the slope is the derivative of that function. -->
-<!-- The slope is the derivative of a function of time $C(t)$ describing the gas concentration. -->
-<!-- By fitting a model describing the gas concentration as a function of time, the derivative of that function  -->
-<!-- Gas analysers used on the field produce a dataset of gas concentration over time and, to transform those into fluxes (i.e. the amount of gas per unit of time per unit of surface of the ecosystem), it is necessary to make a model of the gas concentration over time, from which we can extract a slope. -->
 There are two main pathways to determine $C(t)$.
 The theoretical approach taken by @kutzbachCO2FluxDetermination2007 includes the relevant flux processes (e. g. photosynthesis, plant respiration, soil respiration) in one equation.
-<!-- , and gathered them into models describing the change of gas concentration inside the chamber as a function of time. -->
-<!-- The result is a much more complex set of equations with the advantages of describing the processes better and being more universal. -->
-<!-- While this provides an accurate description of ecosystem dynamics, it is difficult to use in practice. -->
-<!-- The result, while describing ecosystem dynamics better, is much more complex to use. -->
-<!-- However, because of its complexity, this approach struggles to gain traction in the ecosystem functioning community. -->
 An alternative approach is to empirically find a mathematical expression that adequately describes the shape of the fluxes.
 The latter approach has the advantage of being easier to implement and optimize when fitting a model to real data.
-<!-- The most common model is the Hutchinson and Mosier model (HMR) [@hutchinsonImprovedSoilCover1981; @pedersenComprehensiveApproachSoilatmosphere2010] which was designed for soil respiration and modified to include photosynthesis [@huppiRestrictingNonlinearityParameter2018] and to provide a good fit when light intensity and photosynthesis become more important drivers of gas concentration changes than air temperature [@kutzbachCO2FluxDetermination2007]. -->
 The most common is the Hutchinson-Mosier model [HM\; @hutchinsonImprovedSoilCover1981].
 As the HM model cannot fit linear data, implementing it relies on the user deciding if a flux should be fitted with a linear or the HM model [`HMR` R package\; @HMRpackage].
 An improvement was the kappamax method [@huppiRestrictingNonlinearityParameter2018], which automates this step, making the workflow reproducible.
-<!-- The R package applying this method, gasfluxes [@fussGasfluxesGreenhouseGas2024], is  -->
-<!-- @huppiRestrictingNonlinearityParameter2018 improved the HMR model to include photosynthesis; however making it more difficult to use. -->
 As different models tend to under- or overestimate fluxes [@johannessonOptimizingClosurePeriod2024; @pihlatieComparisonStaticChambers2013; @forbrichComparisonLinearExponential2010], using an exponential and a linear model within the same dataset hinders the comparability of the data.
-Removing the need to choose between the linear or the HM model, [@zhaoCalculationDaytimeCO22018]{.mark} introduced a model that can fit both linear and exponential fluxes and takes into account the potential uncertainty around the real start of the measurement.
-<!-- Removing the need to chose between the linear or the HM model, @zhaoCalculationDaytimeCO22018 introduced a model that can fit both linear and exponential fluxes. -->
-<!-- Also, the model includes $t_0$ (the dead band) as a fitting parameter, taking into account the potential uncertainty around the real start of the measurement. -->
-<!-- The HMR (need to introduce the HMR model earlier) model, initially designed for soil respiration, has been adapted to include the whole ecosystem [@zhaoCalculationDaytimeCO22018; ]. -->
-<!-- This approach works in many cases, but struggles to provide a good fit when light intensity and photosynthesis become more important drivers of gas concentration changes than air temperature [@kutzbachCO2FluxDetermination2007]. -->
-<!-- This version if one of the available models in `fluxible`. -->
-<!-- The improvements done by @zhaoCalculationDaytimeCO22018 correct those issues, and this version is one of the models available in `fluxible`. -->
-<!-- Another widely spread approach to determine the slope is to plot the measurements, manually find "the most linear part" and apply a linear model to it. -->
-<!-- Several R packages [@wilsonFluxfinderPackageReproducible2024; @rheaultGoFluxUserfriendlyWay2024; @jurasinskiFluxFluxRate2022; @brummerCo2fluxtentToolsNEE2024; @pedersenComprehensiveApproachSoilatmosphere2010; @fussGasfluxesGreenhouseGas2024; @Zhao2019] have also been developped recently. -->
-<!-- While it is going in the direction of open science and automation standards for ecosystem gas flux processing, there was room for a tool that would altogether treat the data in a reproducible, homogeneous and fast way, while allowing full flexibility on the choice of models, field equipment and quality thresholds. -->
-<!-- Additionally, none currently includes the work from @zhaoCalculationDaytimeCO22018. -->
-<!-- The differences between those different packages are discussed later on. -->
-
-<!-- Considering the quality of the fits individually instead of treating the dataset in a homogenous way comes with a high risk of introducing bias as different models tend to under- or over- estimate fluxes [@johannessonOptimizingClosurePeriod2024, @pihlatieComparisonStaticChambers2013, @forbrichComparisonLinearExponential2010]. -->
-<!-- Unsystematically under- or over-estimating fluxes introduces, at best, a random error, and at worst, a constant bias in the data. -->
-<!-- To prevent this the `fluxible` R package is designed to process the entire dataset with the same fit choices and quality thresholds. -->
-<!-- The `fluxible` homogenous approach prevents this.  -->
+Removing the need to choose between the linear or the HM model, @zhaoCalculationDaytimeCO22018 introduced a model that can fit both linear and exponential fluxes and takes into account the potential uncertainty around the real start of the measurement.
 
 
 Here, we introduce the `fluxible` package, using R language [@rcoreteamLanguageEnvironmentStatistical2024].
-<!-- The `fluxible` R package covers all the necessary steps: attributing metadata, fitting a model to each measurement, assessing the data quality (including a plotting function for visual check), and calculating fluxes. -->
 The package takes raw gas concentration data to an analysis-ready clean dataset of fluxes in five functions (@fig-concept).
 The core principles of `fluxible` are to (1) treat the entire dataset homogeneously, (2) allow full model choice and quality thresholds flexibility, and (3) be transparent and reproducible.
-<!-- This reduces bias introduced by either manually selecting portions of measurements or applying a different model to different measurements. -->
-<!-- Homogeneous treatment of the dataset prevents introducing bias by either manually selecting portions of measurements or applying a different model to different measurements. -->
-<!-- The data quality is still guaranteed with the user's ad-hoc function and visual control. -->
-<!-- The fitting function primarily uses the exponential model from @zhaoCalculationDaytimeCO22018 but also offers linear and quadratic, and new ones can be easily added in the workflow. -->
-<!-- A strong focus has been put on offering the tools for filtering the data based on diagnostics, thus making that step reproducible and automated. -->
-<!-- Yet, `fluxible` also allows for time efficient data treatment with default quality thresholds and optional visual assessment, which is an asset for field courses where time allocated for data cleaning is constrained. -->
-<!-- It also allows more thorough quality assessment where the user can set their thresholds and do an in-depth visual check. -->
-
 
 # Implementation
 
 <!-- 1272 words -->
 
-<!-- {{< include implementation.qmd >}} -->
-<!-- ## Workflow -->
 
 `fluxible` provides a user-friendly and fully transparent workflow to calculate fluxes measured with chambers (@fig-concept), in which the user decides *a priori* on model type and quality control.
 The R package can be installed from CRAN (“The Comprehensive R Archive Network”, n.d.) using `install.packages("fluxible")`, and an example workflow is available in Appendix -@sec-example.
 
-![The `fluxible` R package processes raw field measured gas concentration data into analysis-ready fluxes in five steps, including data quality assessment. All functions have the `flux_` prefix. [A list of all functions is available in Appendix]{.mark} -@sec-listfct.](figures/concept_figure.png){#fig-concept}
+![The `fluxible` R package processes raw field measured gas concentration data into analysis-ready fluxes in five steps, including data quality assessment. All functions have the `flux_` prefix. A list of all functions is available in Appendix -@sec-listfct.](figures/concept_figure.png){#fig-concept}
 
-<!-- The user decides *a priori* on model and quality control, allowing a transparent and automated workflow. -->
-<!-- The user’s decisions are made beforehand and passed as function arguments, allowing `fluxible` to run automatically without prompting the user and making those decisions fully transparent. -->
-<!-- The input is a dataset of several time series of gas concentrations (called measurements later on), and a record of the start of each measurement. -->
-<!-- `fluxible` separates the different measurements and attributes meta data based on the later (`flux_match`). -->
-<!-- Then it fits a model to each measurement of gas concentrations over time and extracts the rate of change of gas concentration necessary for the flux calculations (`flux_fitting`). -->
-<!-- A dedicated function (`flux_quality`) provides an overview of the quality of the model fit for each measurement and a summary of the overall quality of the dataset. -->
-<!-- It lets the user decide on quality thresholds to discard or replace measurements with zero. -->
-<!-- The user can visually check the models' measurements with a function that plots all the measurements and exports them in an external file (`flux_plot`). -->
-<!-- Finally, the fluxes are calculated (`flux_calc`) using the slope provided by `flux_fitting` and filtered with `flux_quality`. -->
-<!-- The outputs are a file containing all the plotted measurements and a clean dataset of calculated fluxes. -->
-
-<!-- The examples datasets are included in the `fluxible` R package and are coming from  -->
-<!-- The datasets used for examples are included in the `fluxible` R package and are an extract from the data collected during the Plant Functional Traits Course 6 [REF datapaper]. -->
 
 
 ## Input and output
-<!-- `fluxible` data input is simple because it does not require specific names or column order, and can be done with `read_delim` [@readr2024]. -->
-<!-- (see Appendix -@sec-dataprep for detailed guidelines and an introduction to the `licoread` R package). -->
-<!-- For detailed guidelines on how to prepare the raw data for use with `fluxible`, see the vignette @sec-dataprep. -->
-`fluxible` requires two inputs: a dataset of the gas concentration over time and a separate metadata file recording  the start time of each measurement[$~$]{.mark}(@fig-concept).
-The gas concentration dataset is produced by a logger or a gas analyser and contains at minimum a datetime column and a gas concentration column for all the measurements [(i. e. a time serie of gas concentration that will result in a single flux)]{.mark}.
-<!-- `fluxible` is optimized for a continuous dataset (ie one file containing all the measurements) but  -->
-The second file must contain a column with the start [of each measurement (in datetime format)]{.mark} and identifiers (e.g. the plot IDs) for each measurement.
-<!-- [If the length of the measurements is inconsistent, an end column is also necessary.]{.mark} -->
-Both inputs can contain other columns, which will be kept.
-Appendix -@sec-dataprep provides guidelines for importing the data, [both for the continuous logging and "one file per flux" approaches.]{.mark}
-<!-- Appendix -@sec-dataprep provides guidelines to import the data, including the "one file per flux" approach, and an introduction to the `licoread` R package to import files from LI-COR soil chamber systems. -->
-<!-- It is recommended to carefully decide what a dataset will be -->
-As the data processing and quality control is done for the entire dataset, we recommend carefully considering what constitutes one dataset (e.g., splitting different campaigns in separate datasets) before starting the `fluxible` workflow.
-<!-- Any classifier potentially requiring different data treatment (campaigns, instruments, or else) should be considered to subset the data before starting the `fluxible` workflow. -->
-When measuring different gases simultaneously, we also recommend making a separate dataset for each gas, as the quality checks require different thresholds (see Appendix -@sec-twogases for a multi-gas example).
-<!-- An example of how to use `fluxible` with several gases measured simultaneously is provided in the supplementary material (Appendix -@sec-twogases). -->
-<!-- Typically, a gas analyser (or the logger connected to it) will produce a dataset of gas concentration and other measurements over time without distinct measurement IDs. -->
-<!-- A separate file provides the measurements’ metadata (plot ID, treatments, replicate number, and the like) with a timestamp of the start of each measurement. -->
-<!-- `fluxible` needed inputs are the dataset from the gas analyser and the metadata file. -->
 
-<!-- After processing through `fluxible` and thorough data quality control, both automatic and user-controlled, the final output is a dataset of fluxes, with the timestamps of the start of the measurements, the measurement identifiers provided in the measurements record, and any other variables present in both inputs. -->
-The final output of the `fluxible` workflow is a dataset [containing: clean fluxes]{.mark} (@fig-concept), timestamps of the start of the measurements, measurement identifiers provided in the measurements record, and any other variables present in either input.
+`fluxible` requires two inputs: a dataset of the gas concentration over time and a separate metadata file recording  the start time of each measurement (@fig-concept).
+The gas concentration dataset is produced by a logger or a gas analyser and contains at minimum a datetime column and a gas concentration column for all the measurements (i. e. a time serie of gas concentration that will result in a single flux).
+The second file must contain a column with the start of each measurement (in datetime format) and identifiers (e.g. the plot IDs) for each measurement.
+Both inputs can contain other columns, which will be kept.
+Appendix -@sec-dataprep provides guidelines for importing the data, both for the continuous logging and "one file per flux" approaches.
+As the data processing and quality control is done for the entire dataset, we recommend carefully considering what constitutes one dataset (e.g., splitting different campaigns in separate datasets) before starting the `fluxible` workflow.
+When measuring different gases simultaneously, we also recommend making a separate dataset for each gas, as the quality checks require different thresholds (see Appendix -@sec-twogases for a multi-gas example).
+
+The final output of the `fluxible` workflow is a dataset containing: clean fluxes (@fig-concept), timestamps of the start of the measurements, measurement identifiers provided in the measurements record, and any other variables present in either input.
 
 ## Attributing meta-data
-The `flux_match` function matches each flux, i.e., a series of gas concentration data points over time, with their measurement metadata based on the time stamp[$~$]{.mark}(@fig-concept).
+
+The `flux_match` function matches each flux, i.e., a series of gas concentration data points over time, with their measurement metadata based on the time stamp (@fig-concept).
 The `flux_match` function also attributes each flux a unique fluxID (related to the chronological order of the measurements), which is used throughout the entire workflow.
-<!-- The fluxID is used through the entire workflow, reducing the risk of bias by identifying the type of measurement or treatment. -->
-
-```{r}
-#| echo: false
-#| eval: false
-library(fluxible)
-
-conc_lia <- flux_match(
-  raw_conc = co2_liahovden,
-  field_record = record_liahovden,
-  datetime_col = datetime,
-  start_col = start,
-  conc_col = conc,
-  startcrop = 0,
-  measurement_length = 180,
-  ratio_threshold = 0.5,
-  time_diff = 0
-)
-```
-
-
-<!-- # Water vapor correction -->
-<!-- If applicable, users can correct the gas concentration for water vapour with the function `flux_vapor`. -->
-<!-- One final correction that must be made to the measured water vapor $$H_2O$$ and carbon dioxide $$CO_2$$) is related to the fact that these measurements occur in wet air instead of dry air. -->
-<!-- Phenomenologically, when water vapor is in the air being analyzed in the gas spectrometer within the infrared gas analyser, it introduces error. -->
-<!-- This error is due to the water vapor absorbing heat from the light used to analyze the gases. -->
-<!-- To correct for this effect, both the $CO_2$ and $H_2O$ concentrations need to be transformed as follows: -->
-
-<!-- $$ -->
-<!-- [\text{CO}_2]_{\text{dry}} = \frac{[\text{CO}_2]_{\text{wet}}}{1 - \frac{[\text{H}_2\text{O}]_{\text{wet}}}{1000}} -->
-<!-- $${#eq-co2} -->
-<!-- $$ -->
-<!-- [\text{H}_2\text{O}]_{\text{dry}} = \frac{[\text{H}_2\text{O}]_{\text{wet}}}{1 - \frac{[\text{H}_2\text{O}]_{\text{wet}}}{1000}} -->
-<!-- $${#eq-h2o} -->
-
-<!-- where $[\text{CO}_2]_{\text{wet}}\) and \([\text{H}_2\text{O}]_{\text{wet}}$ correspond to raw infrared gas analyser outputs. -->
 
 
 ## Model fitting
-<!-- To calculate an ecosystem flux, the rate of change of gas concentration inside the flux chamber over a specific time needs to be estimated. -->
-<!-- A flux is calculated based on the rate of change of gas concentration at a specific time $t_0$ (`t_zero` in `fluxible`), which is the derivative $C'(t)$ at $t_0$ (called `f_slope` in `fluxible`) of a model $C(t)$ describing the gas concentration over time. -->
-<!-- The derivative of, $C'(t_0)$ (also called `f_slope` later on) (see @sec-calc). -->
-<!-- The model $C(t)$ is fitted to the data using the `flux_fitting` function which provides a choice of models (i.e. linear, exponential, and quadratic) and allows the user to cut the start or the end of the measurements. -->
-The model $C(t)$ is fitted to the data using the `flux_fitting` function[$~$]{.mark}(@fig-concept), which provides a choice of models (@tbl-fits) and allows the user to prune the start and/or the end of the measurements.
-<!-- This rate is estimated as the derivative of the expression describing the gas concentration as a function of time and is done using the `flux_fitting` function. -->
-<!-- It provides a choice of fits, linear, exponential, and quadratic, and allows one to choose the part of the measurements on which the model will be fitted. -->
-<!-- In the case of the linear model, the derivative is a constant. -->
-<!-- However, the derivative of the exponential and quadratic functions is a function of time, so the choice of $t_0$ matters. -->
-<!-- In those cases, the value needed to calculate the flux is the value of the derivative at a specific point in time (t~z~). -->
-<!-- The exponential model provided by @zhaoCalculationDaytimeCO22018 includes $t_0$ as a fitting parameter. -->
-<!-- For the quadratic model, the user defines the value of $t_0$. -->
+
+The model $C(t)$ is fitted to the data using the `flux_fitting` function (@fig-concept), which provides a choice of models (@tbl-fits) and allows the user to prune the start and/or the end of the measurements.
 The slope (`f_slope` in `fluxible`) used for the flux calculation is the derivative of $C(t)$ at $t_0$ (`t_zero` in `fluxible`), $C'(t_0)$.
 The derivative $C'(t)$ is a function of time in the quadratic and exponential models, thus requesting the user to set $t_0$ (except `exp_zhao18` which includes $t_0$ as a fitting parameter).
-<!-- The exponential model `exp_zhao18` [@zhaoCalculationDaytimeCO22018] includes $t_0$ as a fitting parameter. -->
-[We recommend the use of the models `exp_zhao18` (uncertainties around $t_0$) or `exp_tz` (fixed $t_0$) because they are more robust]{.mark} (shown in Appendix -@sec-theory).
-[Other models are provided for backwards compatibility and user flexibility.]{.mark}
+We recommend the use of the models `exp_zhao18` (uncertainties around $t_0$) or `exp_tz` (fixed $t_0$) because they are more robust (shown in Appendix -@sec-theory).
+Other models are provided for backwards compatibility and user flexibility.
 The automatic fitting of the `exp_zhao18` model [@zhaoCalculationDaytimeCO22018] is described in Appendix -@sec-theory.
-[All models allow positive and negative fluxes, and will produce a negative slope if the concentration decreases over time (ecosystem uptake) and a positive slope if the concentration increases over time (ecosystem loss).]{.mark}
-[Internally, the models use relative time since the measurement start, which accounts for missing data and inconsistent gas concentration measurement frequency.]{.mark}
+All models allow positive and negative fluxes, and will produce a negative slope if the concentration decreases over time (ecosystem uptake) and a positive slope if the concentration increases over time (ecosystem loss).
+Internally, the models use relative time since the measurement start, which accounts for missing data and inconsistent gas concentration measurement frequency.
 
-<!-- \small
-
-+------------+----------------------------------------------------------+--------------------------------------+
-|`fit_type`  |model $C(t)$                                              |slope at $t_0$, $C'(t_0)$             |
-+============+==========================================================+======================================+
-|`linear`    |$a * t + b$                                               |$a$                                   |
-+------------+----------------------------------------------------------+--------------------------------------+
-|`quadratic` |$a * t² + b * t + c$                                      |$a * t_0 + b$                         |
-+------------+----------------------------------------------------------+--------------------------------------+
-|`exp_zhao18`|$C_m + a * (t - t_0) + (C_0 - C_m) * \exp(-b * (t - t_0))$|$a + b * (C_m - C_0)$                 |
-+------------+----------------------------------------------------------+--------------------------------------+
-|`exp_tz`    |$C_m + a * t + (C_0 - C_m) * \exp(-b * t)$                |$a + b * (C_m - C_0) * \exp(-b * t_0)$|
-+------------+----------------------------------------------------------+--------------------------------------+
-|`exp_hm`    |$C_m + (C_0 - C_m) * \exp(-b * t)$                        |$b * (C_m - C_0) * \exp(-b * t_0)$    |
-+------------+----------------------------------------------------------+--------------------------------------+
-
-: \normalsize Models available in the `flux_fitting` function and their slope at $t_0$. The slope parameter $t_0$ must be specified by the user in all models, except for the `linear` and `exp_zhao18` models. {#tbl-fits}
-
-\normalsize -->
-
-<!-- +------------+-----------------------------------------------------------------+------------------------------------------------+
-|`fit_type`  |model $C(t)$                                                     |slope at $t_0$                                  |
-+============+=================================================================+================================================+
-|`linear`    |$C(t) = a * t + b$                                               |$C'(t_0) = a$                                   |
-+------------+-----------------------------------------------------------------+------------------------------------------------+
-|`quadratic` |$C(t) = a * t² + b * t + c$                                      |$C'(t_0) = a * t_0 + b$                         |
-+------------+-----------------------------------------------------------------+------------------------------------------------+
-|`exp_zhao18`|$C(t) = C_m + a * (t - t_0) + (C_0 - C_m) * \exp(-b * (t - t_0))$|$C'(t_0) = a + b * (C_m - C_0)$                 |
-+------------+-----------------------------------------------------------------+------------------------------------------------+
-|`exp_tz`    |$C(t) = C_m + a * t + (C_0 - C_m) * \exp(-b * t)$                |$C'(t_0) = a + b * (C_m - C_0) * \exp(-b * t_0)$|
-+------------+-----------------------------------------------------------------+------------------------------------------------+
-|`exp_hm`    |$C(t) = C_m + (C_0 - C_m) * \exp(-b * t)$                        |$C'(t_0) = b * (C_m - C_0) * \exp(-b * t_0)$    |
-+------------+-----------------------------------------------------------------+------------------------------------------------+ -->
-
-
-
-```{r}
-#| echo: false
-#| eval: false
-
-slopes_lia <- flux_fitting(
-  conc_df = conc_lia,
-  conc_col = conc,
-  datetime_col = datetime,
-  fit_type = "exponential",
-  end_cut = 10 # the user can decide to restrict the fitting window
-)
-
-```
-
-<!-- ### Leaky systems {#sec-segmentation}
-The workflow described above suits systems in which leaks are assumed negligible.
-When it is not the case, for exemple when using a tent, one might want to use only segments of the measurement, leaving out the parts that are the result of a sudden leak in the system.
-Using `flux_fitting(fit_type = "segments")` automatically slices the measurements into linear segments (minimal length to be defined by user), and provides the weighed mean of the slopes of the segments as an average slope of each measurements. -->
 
 
 ## Quality checks and visualisation
 
-<!-- ### Quality flags -->
-The `flux_quality` function[$~$]{.mark}(@fig-concept) provides fit diagnostics based on the model, checks that the start of the measurement is within a realistic range [(ambient concentration $\pm$ setup error)]{.mark}, and [flags measurements according to the fit diagnostics.]{.mark}
-<!-- detects slopes that are below the minimal detectable slope. -->
+The `flux_quality` function (@fig-concept) provides fit diagnostics based on the model, checks that the start of the measurement is within a realistic range (ambient concentration $\pm$ setup error), and flags measurements according to the fit diagnostics.
 The quality parameters - diagnostic thresholds, ambient concentration, and instrument error - are all set by the user and applied consistently to the entire dataset.
 Measurement quality (i.e. noise) is assessed by judging the model fit (R² or RMSE) and the correlation coefficient between concentration change and time.
-When the fluxes are low (i.e. small change in gas concentration over time), the fit quality [might]{.mark} appear poor because of noise. [In that case, the measurement]{.mark} should not be discarded, but instead replaced by 0 [(low fluxes with a good fit are kept as such)]{.mark}.
+When the fluxes are low (i.e. small change in gas concentration over time), the fit quality might appear poor because of noise. In that case, the measurement should not be discarded, but instead replaced by 0 (low fluxes with a good fit are kept as such).
 A measurement with a noticeable change in gas concentration over time and a bad fit because of excessive noise or other disturbances (e.g. leakage) should be discarded.
-<!-- A column with quality flags (@tbl-flags) is added to the dataframe -->
-<!-- User-defined thresholds applied on the diagnostics (e.g., R² and RMSE) define quality flags for each measurement which are applied consistently to the entire dataset. -->
-<!-- Measurements starting outside a realistic ambient gas concentration range, suggesting that the system was not aired enough, are flagged with `start_error`. -->
-<!-- The output quality flags recommend if an estimated slope should be kept, discarded, or replaced by zero (quality flags and criteria are described in Appendix -@sec-qualityflags). -->
 A column with quality flags (@tbl-flags) and one with recommended slopes are added to the dataframe containing the slopes and metadata.
 The `flux_flag_count` function produces a table summarising all the flags and measurement counts, which helps to assess and report the overall quality of the dataset (also printed as a side effect of `flux_quality`).
-<!-- This table is also printed as a side effect of `flux_quality`. -->
-<!-- A table summarising all the flags and measurement counts, which helps assess and report the overall quality of the dataset, is printed as a side-effect of `flux_quality`. -->
-<!-- The same table can be produced as a dataframe using `flux_flag_count`. -->
-<!-- A table summarising all the flags and measurement counts, which helps assess and report the overall quality of the dataset can be produced using the `flux_flag_count` function. -->
-<!-- This table is also printed when using `flux_quality`. -->
-<!-- The slope calculated by `flux_fitting`, `f_slope`, is kept, and the recommended slope is added in the new column `f_slope_corr` and all rows are kept. -->
-<!-- The model fit quality shows how noisy the measurement is. -->
-<!-- The correlation between gas concentration change and time shows if there is a constant change in gas concentration over time. -->
-<!-- In the case of a very low flux, for example, NEE where ER is equal to GEP, there is no concentration change over time, but there might be enough noise in the measurement to affect the quality of the model fit badly. -->
-<!-- In the case of a very low flux where concentration is changing very little over time, the fit quality will easily appears as bad because of noise. -->
-<!-- Such a flux should, however, not be discarded but instead replaced by 0. -->
-<!-- Still, due to noise or other disturbances, the quality of the model fit needs to be higher to trust the estimated flux value. -->
-<!-- @tbl-flags shows all the diagnostics and default thresholds used in the `flux_quality` function. -->
 Further available quality checks include the g-factor (slope/linear slope) detecting disagreements between the chosen model and linear model, the data ratio (number of data points/length of flux in seconds), detecting measurements with missing data, and the minimal detectable slope (instrument error range/length of the measurement in seconds).
 
-<!-- Other quality checks provided: -->
-
-<!-- - The g-factor ($\frac{\text{slope}}{\text{linear slope}}$) allows to detect strong disagreement between the chosen model and linear model. -->
-<!-- - The g-factor ($\text{slope}/\text{linear slope}$) allows to detect strong disagreement between the chosen model and linear model. -->
-<!-- - The minimal detectable slope is calculated as the instrument error range divided by the length of the measurement. -->
-<!-- - The data ratio (`f_ratio`; $\frac{\text{number of data points}}{\text{length of flux in seconds}}$) allows to detect measurements with missing data. -->
-<!-- - The data ratio (`f_ratio` $=\text{number of data points}/\text{length of flux in seconds}$) allows to detect measurements with missing data. -->
 
 The `flux_quality` function also offers the possibility to apply the kappamax method [@huppiRestrictingNonlinearityParameter2018] on any of the exponential models.
 In this method, the slope is replaced by the linear slope when the parameter b in the exponential is greater than the linear slope divided by the instrument error.
 
-<!-- The `flux_quality` function also offers the possibility to apply the kappamax method [@huppiRestrictingNonlinearityParameter2018] on any of the exponential models. -->
-<!-- This method replaces the slope with the linear slope when the b parameter in the exponential is greater than the linear slope over the instrument error. -->
 
 
-<!-- \small
-
-+---------------+-------------------------------------------------------+-----------------+
-|Quality flag   |Meaning                                                |Recommended slope|
-+===============+=======================================================+=================+
-|`ok`           |The model fit is good.                                 |As estimated by  |
-|               |                                                       |`flux_fitting`   |
-+---------------+-------------------------------------------------------+-----------------+
-|`discard`      |A change in gas concentration over time is detected but|`NA`             |
-|               |the fit is poor.                                       |                 |
-+---------------+-------------------------------------------------------+-----------------+
-|`zero`         |No change of gas concentration over time is detected   |0                |
-|               |(effectively measuring noise only) and the model fit is|                 |
-|               |poor.                                                  |                 |
-+---------------+-------------------------------------------------------+-----------------+
-|`force_discard`|User decided to discard a measurement not flagged as   |`NA`             |
-|               |`discard`.                                             |                 |
-+---------------+-------------------------------------------------------+-----------------+
-|`force_ok`     |User decided to keep a measurement not flagged as `ok`.|As estimated by  |
-|               |                                                       |`flux_fitting`   |
-+---------------+-------------------------------------------------------+-----------------+
-|`force_zero`   |User decided to replace a measurement by 0.            |0                |
-+---------------+-------------------------------------------------------+-----------------+
-|`start_error`  |Measurement start is outside of realistic range of     |`NA`             |
-|               |ambient concentration.                                 |                 |
-+---------------+-------------------------------------------------------+-----------------+
-|`no_data`      |The measurement does not contain data.                 |`NA`             |
-+---------------+-------------------------------------------------------+-----------------+
-|`force_lm`     |User decided to use the linear slope for this flux.    |As estimated by  |
-|               |                                                       |`flux_fitting`   |
-|               |                                                       |(linear model)   |
-+---------------+-------------------------------------------------------+-----------------+
-|`no_slope`     |Model could not be fit to gas concentration data.      |`NA`             |
-+---------------+-------------------------------------------------------+-----------------+
-
-: \normalsize Overview of the quality flags. The full decision scheme for each model is described in Appendix -@sec-qualityflags. {#tbl-flags tbl-colwidths="[20,55,25]"}
-
-\normalsize -->
-
-<!-- ::: {#tbl-panel layout-ncol=1}
-+-------------------------------------------------------------------------------+-------------------------------------------------------+---------------+---------------------------------------------+
-|Criteria                                                                       |Meaning                                                |Quality flag   |Recommended slope                            |
-+===============================================================================+=======================================================+===============+=============================================+
-|`f_fluxid` in `force_discard`                                                  |User has reasons to discard this flux.                 |`force_discard`|`NA`                                         |
-+-------------------------------------------------------------------------------+-------------------------------------------------------+---------------+---------------------------------------------+
-|`f_fluxid` in `force_ok`                                                       |User has reasons to keep this flux.                    |`force_ok`     |As estimated by `flux_fitting`               |
-+-------------------------------------------------------------------------------+-------------------------------------------------------+---------------+---------------------------------------------+
-|`f_fluxid` in `force_zero`                                                     |User has reasons to replace this flux with 0.          |`force_zero`   |0                                            |
-+-------------------------------------------------------------------------------+-------------------------------------------------------+---------------+---------------------------------------------+
-|`f_ratio` = 0 (no data)                                                        |Measurement has no data.                               |`no_data`      |`NA`                                         |
-+-------------------------------------------------------------------------------+-------------------------------------------------------+---------------+---------------------------------------------+
-|`f_ratio` < `ratio_threshold`                                                  |Measurement is missing too many data.                  |`discard`      |`NA`                                         |
-+-------------------------------------------------------------------------------+-------------------------------------------------------+---------------+---------------------------------------------+
-|$|\text{avg first 3 datapoints} - \text{ambient concentration}| > \text{error}$|Measurement is starting outside of realistic range.    |`start_error`  |`NA`                                         |
-+-------------------------------------------------------------------------------+-------------------------------------------------------+---------------+---------------------------------------------+
-
-:Criteria and flags used in `flux_quality` when using any model.
-
-+-------------------------------------------------------------------------------+-------------------------------------------------------+---------------+---------------------------------------------+
-|Criteria                                                                       |Meaning                                                |Quality flag   |Recommended slope                            |
-+===============================================================================+=======================================================+===============+=============================================+
-|`f_fluxid` in `force_lm`                                                       |User has reasons to use the linear slope for this flux.|`force_lm`     |As estimated by `flux_fitting` (linear model)|
-+-------------------------------------------------------------------------------+-------------------------------------------------------+---------------+---------------------------------------------+
-|`f_gfactor` > `gfactor_threshold`                                              |Slope is too different from linear slope.              |`discard`      |`NA`                                         |
-|                                                                               |                                                       |               |                                             |
-|& `f_slope_lm` > `f_min_slope`                                                 |                                                       |               |                                             |
-+-------------------------------------------------------------------------------+-------------------------------------------------------+---------------+---------------------------------------------+
-|`f_gfactor` > `gfactor_threshold`                                              |Slope is below the minimal detectable slope.           |`zero`         |0                                            |
-|                                                                               |                                                       |               |                                             |
-|& `f_slope_lm` $\leq$ `f_min_slope`                                            |                                                       |               |                                             |
-+-------------------------------------------------------------------------------+-------------------------------------------------------+---------------+---------------------------------------------+
-|($|b| \geq$ `b_threshold` or                                                   |The fit is bad.                                        |`discard`      |`NA`                                         |
-|                                                                               |                                                       |               |                                             |
-|$\text{RMSE} >$ `rmse_threshold`)                                              |                                                       |               |                                             |
-|                                                                               |                                                       |               |                                             |
-|& $|`f_cor_coef`| \geq$ `cor_threshold`                                        |The concentration is changing over time.               |               |                                             |
-|                                                                               |                                                       |               |                                             |
-|& `f_slope_lm` > `f_min_slope`                                                 |The slope is detectable.                               |               |                                             |
-+-------------------------------------------------------------------------------+-------------------------------------------------------+---------------+---------------------------------------------+
-|($|b| \geq$ `b_threshold` or                                                   |The fit is bad.                                        |`zero`         |0                                            |
-|                                                                               |                                                       |               |                                             |
-|$\text{RMSE} >$ `rmse_threshold`)                                              |                                                       |               |                                             |
-|                                                                               |                                                       |               |                                             |
-|& $|`f_cor_coef`| \geq$ `cor_threshold`                                        |The concentration is changing over time.               |               |                                             |
-|                                                                               |                                                       |               |                                             |
-|& `f_slope_lm` $\leq$ `f_min_slope`                                            |The slope is not detectable.                           |               |                                             |
-+-------------------------------------------------------------------------------+-------------------------------------------------------+---------------+---------------------------------------------+
-|($|b| \geq$ `b_threshold` or                                                   |The fit is bad.                                        |`zero`         |0                                            |
-|                                                                               |                                                       |               |                                             |
-|$\text{RMSE} >$ `rmse_threshold`)                                              |                                                       |               |                                             |
-|                                                                               |                                                       |               |                                             |
-|& $|`f_cor_coef`| <$ `cor_threshold`                                           |The concentration is not changing over time.           |               |                                             |
-+-------------------------------------------------------------------------------+-------------------------------------------------------+---------------+---------------------------------------------+
-|$\text{RMSE} \leq$ `rmse_threshold`                                            |The fit is good.                                       |`ok`           |As estimated by `flux_fitting`               |
-+-------------------------------------------------------------------------------+-------------------------------------------------------+---------------+---------------------------------------------+
-
-:Criteria and flags used in `flux_quality` when using an exponential model.
-
-Overview of the flags provided by `flux_quality`. The criteria are applied in descending order. {#tbl-flags}
-::: -->
-
-
-
-```{r}
-#| echo: false
-#| eval: false
-
-flags_lia <- flux_quality(
-  slopes_df = slopes_lia,
-  conc_col = conc
-)
-```
-
-<!-- ### Visual assessment -->
-
-The `flux_plot` function[$~$]{.mark}(@fig-concept) requires the quality diagnostics and thus must be used after `flux_quality`.
+The `flux_plot` function (@fig-concept) requires the quality diagnostics and thus must be used after `flux_quality`.
 It produces a plot for each flux with unique fluxID, including fits, slopes, diagnostics, and quality flags provided by `flux_quality` (@fig-plot), which can be output as a pdf file.
- <!-- (`print_plot = "FALSE"` and `output = "pdfpages"`). -->
-<!-- , with different output options (for large datasets, `print_plot = "FALSE"` and `output = "pdfpages"` offer the smoothest behaviour). -->
-<!-- The visual check of each flux visually distinguishes if the recorded start and the data logger were mismatched or if another model could fit better. -->
 After the visual assessment of the model fits, the user can rerun `flux_fitting` or `flux_quality` adjusting the fitting window, using a different model, or changing the quality thresholds.
-<!-- Note that we do not recommend adapting quality thresholds after data inspection and consider it a last resort approach to salvage a poor quality dataset. -->
-<!-- The user can override the outcome of the quality assessment by providing a vector of fluxIDs to the `force_discard`, `force_ok` and `force_zero` arguments in `flux_quality` for measurements where a different quality flag is justified. -->
 The user can override the outcome of the quality assessment by providing a vector of fluxIDs to the `force_` arguments in `flux_quality`.
-<!-- For cases where the user can justify a different quality flag than `flux_quality`, the `force_discard`, `force_ok` and `force_zero` argument allows to provide a vector of fluxIDs. -->
-<!-- Similarly, the `force_ok` argument can force an ok quality flag on a flux initially flagged as discard or zero by `flux_quality`. -->
-<!-- The `flux_quality` function prints a summary of all the flags and measurement counts, which helps assess the overall quality of the dataset. -->
-
- <!-- Concentration is in ppm in this example, but will be in whatever unit used in the processed dataset -->
 
 ```{r}
 #| echo: false
@@ -570,7 +211,7 @@ The user can override the outcome of the quality assessment by providing a vecto
 #| eval: true
 #| fig-width: 8
 #| fig-height: 4
-#| fig-cap: "[Example output]{.mark} of the `flux_plot` function. With quality flags and diagnostics from `flux_quality`, the slope at $t_0$ (continuous line), the model fit (dashed line), the linear fit (dotted line), and the raw gas concentration (dots). The colours show the quality flags (green for `ok`, red for `discard`, and purple for `zero` with default settings) and cuts (same colour as `discard`). The gray vertical line indicates $t_0$ [(a fitting parameter when using the `exp_zhao18` model, otherwise user defined in `flux_fitting`). The g-factor is calculated as slope/linear slope, and b is the b parameter inside the exponential model. The concentration unit in this example is in ppm, and depends on the data input. The purpose of this visualization is quality control and to reduce the complexity of these plots the units are not shown. The facet IDs are fluxIDs by default, but can be customised using the `f_facetid` argument.]{.mark}"
+#| fig-cap: "Example output of the `flux_plot` function. With quality flags and diagnostics from `flux_quality`, the slope at $t_0$ (continuous line), the model fit (dashed line), the linear fit (dotted line), and the raw gas concentration (dots). The colours show the quality flags (green for `ok`, red for `discard`, and purple for `zero` with default settings) and cuts (same colour as `discard`). The gray vertical line indicates $t_0$ (a fitting parameter when using the `exp_zhao18` model, otherwise user defined in `flux_fitting`). The g-factor is calculated as slope/linear slope, and b is the b parameter inside the exponential model. The concentration unit in this example is in ppm, and depends on the data input. The purpose of this visualization is quality control and to reduce the complexity of these plots the units are not shown. The facet IDs are fluxIDs by default, but can be customised using the `f_facetid` argument."
 
 library(fluxible)
 
@@ -616,82 +257,19 @@ flags_lia |>
 
 
 ## Flux calculation {#sec-calc}
-<!-- Once the quality of the measurements has been checked, fluxes can be calculated. -->
-<!-- The calculations of fluxes at the plot's surface are based on the slope of the gas concentration change inside the flux chamber. -->
-The `flux_calc` function[$~$]{.mark}(@fig-concept) calculates the flux using @eq-flux where $P$ is the pressure ($atm$), $V$ the total volume of the setup ($L$), $R$ the gas constant ($0.082057 L*atm\ K^{-1}\ mol^{-1}$), $T$ the chamber air temperature ($K$) and $A$ the area of the chamber base ($m^2$).
-<!-- The user can decide to use the slope as estimated by `flux_fitting` (`f_slope`) or quality checked by `flux_quality` (`f_slope_corr`) as the slope at $t_0$, $C'(t_0)$. -->
+
+The `flux_calc` function (@fig-concept) calculates the flux using @eq-flux where $P$ is the pressure ($atm$), $V$ the total volume of the setup ($L$), $R$ the gas constant ($0.082057 L*atm\ K^{-1}\ mol^{-1}$), $T$ the chamber air temperature ($K$) and $A$ the area of the chamber base ($m^2$).
 The slope at $t_0$, $C'(t_0)$, can either be the slope estimated by `flux_fitting` (`f_slope`) or provided by `flux_quality` (`f_slope_corr`).
-<!-- The slope at $t_0$, $C'(t_0)$, is estimated by `flux_fitting` and quality checked by `flux_quality`, which also provides the `f_slope_corr`, a column considering the quality flags by either keeping the slope, discarding it or replacing it by 0. -->
 
 $$
 \text{flux}=C'(t_0)\times \frac{P\times V}{R\times T\times A}
 $${#eq-flux}
 
 
-The `flux_calc` function can handle [$mmol\ mol^{-1}$, $ppm$, $ppb$ or $ppt$]{.mark} for input of gas concentration and Celsius, Kelvin, and Fahrenheit for temperature.
-<!-- [The units of gas concentration, `conc_unit`, can be $mmol\ mol^{-1}$, $ppm$, $ppb$ or $ppt$.]{.mark} -->
-[The units of the calculated flux is decided by the user and should be in the form $amount\ surface^{-1}\ time^{-1}$.]{.mark}
-[Amount can be $mol$, $mmol$, $\mu mol$, $nmol$ or $pmol$; surface can be $m^2$, $dm^2$ or $cm^2$; time can be $day$, $hour$, $minute$ or $second$]{.mark} (example in Appendix -@sec-excalc).
-<!-- It also offers some choice for the output unit ($mmol\ m^{-2}\ h^{-1}$ or $\mu mol\ m^{-2}\ h^{-1}$). -->
-Environmental data that were measured simultaneously as the gas concentration (e.g., soil temperature) can be nested or summarised as mean, sum, or median, or kept, assuming that their value is constant within each measurement (e.g., [elevation]{.mark}).
-
-
-<!-- As `flux_calc` summarizes each measurement into a single row, other variables measured simultaneously (e.g. soil temperature) can be summarised as mean, sum, median or kept (assuming their value is constant within each measurement, e.g. altitude). -->
-<!-- The `flux_calc` function can handle different units for input of gas concentration and temperature and offers some choice for the output. -->
-
-<!-- The `flux_quality` function provides the `f_slope_corr` column which directly considers the quality flags by either keeping the slope, discarding it or replacing it by 0. -->
-
-
-<!-- \begin{equation}
-\text{flux}=\text{slope}\times \frac{P\times V}{R\times T\times A}
-(\#eq:flux)
-\end{equation} -->
-
-
-
-
-<!-- Depending on the field setup, the chamber volume can be passed as a constant or variable. -->
-<!-- Depending on the field setup, the chamber and tube volumes, plot area and atmospheric pressure can be constants or variables. -->
-<!-- The `flux_calc` function summarizes each measurement into a single row. -->
-<!-- The user can indicate columns to keep (`cols_keep`), as long as their content is constant inside each measurement, or to average over the length of the fitting window (`cols_ave`). -->
-<!-- Environmental data recorded in the same dataframe can be kept and summarised as their mean for the length of the measurement (`cols_ave` argument). -->
-
-```{r}
-#| echo: false
-#| eval: false
-
-fluxes_lia <- flags_lia |>
-  flux_calc(
-    f_slope_corr, # we use the slopes provided by flux_quality
-    datetime,
-    temp_air,
-    conc_unit = "ppm",
-    flux_unit = "mmol",
-    setup_volume = 24.575,
-    atm_pressure = 1,
-    plot_area = 0.0625,
-    cols_keep = c("turfID", "type", "round"),
-    cols_ave = c("temp_soil", "PAR")
-  )
-  
-
-```
-
-<!-- ### Units -->
-<!-- The `flux_calc` function can handle different units and converts the output to standard units. -->
-<!-- The gas concentration input can be in $ppm$ or $ppb$ (`conc_unit = "ppm"` or `"ppb"`), and the output can be in $mmol/m²/h$ or $\mu mol/m²/h$ (`flux_unit = "mmol"` or `"micromol"`). -->
-<!-- Air temperature can be in degree Celsius, Fahrenheit or Kelvin in the input, and will be in Kelvin in the output (`temp_air_unit` argument). -->
-<!-- The atmospheric pressure input needs to be in $atm$, volumes (tube and chamber) in $L$, and plot area in $m²$. -->
-<!-- The atmospheric pressure input needs to be in atmosphere, volumes (tube and chamber) in liter, and plot area in square meter. -->
-
-
-
-
-<!-- # Working example -->
-
-<!-- {{< include example.qmd >}} -->
-
-
+The `flux_calc` function can handle $mmol\ mol^{-1}$, $ppm$, $ppb$ or $ppt$ for input of gas concentration and Celsius, Kelvin, and Fahrenheit for temperature.
+The units of the calculated flux is decided by the user and should be in the form $amount\ surface^{-1}\ time^{-1}$.
+Amount can be $mol$, $mmol$, $\mu mol$, $nmol$ or $pmol$; surface can be $m^2$, $dm^2$ or $cm^2$; time can be $day$, $hour$, $minute$ or $second$ (example in Appendix -@sec-excalc).
+Environmental data that were measured simultaneously as the gas concentration (e.g., soil temperature) can be nested or summarised as mean, sum, or median, or kept, assuming that their value is constant within each measurement (e.g., elevation).
 
 
 # Validation
@@ -701,34 +279,12 @@ fluxes_lia <- flags_lia |>
 The `fluxible` workflow was validated by comparing a testing dataset of ecosystem gas flux measurements provided by LI-COR (processed by them in SoilFluxPro; SFP; LI-COR Biosciences, Lincoln, NE, USA) with the corresponding raw dataset processed with `fluxible`.
 A subset of the CH~4~ measurements (3925 out of 16689) required a different fitting window than the rest of the dataset as there was significant noise at the start of the measurements.
 Therefore those data were processed separately before being included in the comparison at the final stage.
-[Strategies to inspect such large datasets are discussed in]{.mark} Appendix -@sec-example.
-<!-- To validate the `fluxible` workflow, a testing dataset of ecosystem gas fluxes measurements was provided by LI-COR (LI-COR Biosciences, Lincoln, NE, USA). -->
-<!-- The raw gas concentration data, measured with LI-COR soil chamber system (LI-7820 with LI-7820, LI-870, and LI-7810) were processed both with SoilFluxPro [the software provided by LI-COR to process fluxes, SFP \; @soilfluxpro] and `fluxible`, using the HM model as it is the closest to the SFP workflow. -->
+Strategies to inspect such large datasets are discussed in Appendix -@sec-example.
 
-<!-- Both methods seem to agree (correlation coefficient above 0.9 for all gases and instruments; @fig-sfp). -->
 The two methods show a strong correlation (R > 0.9) for all gases and instruments (@fig-sfp).
-[However, some of the data could not be fitted with the HM model due to the absence of curvature, hence the lower n for the exponential and no exponential fitting for]{.mark} CH~4~ (@fig-sfp facet a).
-[It was decided here to strictly apply the HM model for comparison purpose, as it is the closest to the SFP exponential workflow, but this strongly supports our recommandation to use the model presented in @zhaoCalculationDaytimeCO22018 (i. e. `exp_zhao18` or `exp_tz`).]{.mark}
-<!-- CH~4~ data could not be fitted with the HM model due to the absence of curvature. -->
-<!-- [Similarly, a large portion of measurements had not enough curvature to be fitted with the HM model and were therefore discarded, hence the smaller n for the exponential model.]{.mark} -->
-<!-- Some measurements were below the minimal detectable flux in `fluxible` and not in SFP (@fig-sfp facet a). -->
-<!-- Some measurements were [flagged as "zero"] in `fluxible` and not in SFP (@fig-sfp facet a). -->
-<!-- This could be explained by further differences in the fitting window, which might have been corrected in SFP but were not in `fluxible`. -->
-<!-- However, it does not invalidate the comparison, but rather reflects the need for visual inspection, which was not done here due to the large number of fluxes to inspect (n = 16689). -->
+However, some of the data could not be fitted with the HM model due to the absence of curvature, hence the lower n for the exponential and no exponential fitting for CH~4~ (@fig-sfp facet a).
+It was decided here to strictly apply the HM model for comparison purpose, as it is the closest to the SFP exponential workflow, but this strongly supports our recommandation to use the model presented in @zhaoCalculationDaytimeCO22018 (i. e. `exp_zhao18` or `exp_tz`).
 
-<!-- However, it does not invalidate the comparison, but rather reflects the limitation of processing  -->
-<!-- However, it does not invalidate the comparison, but rather reflects the need for better reporting of the start and end of the measurements. -->
-<!-- Indeed, in the absence of record data, the start and end of the time series were used, and with LI-COR soil chamber -->
-<!-- but `fluxible` appears more conservative in detecting fluxes below the minimal detectable flux. -->
-<!-- This could be explained by the flux-by-flux approach of SFP, as manually selecting the observation window increases the fit quality. -->
-
-<!-- As SFP allows a flux-by-flux approach, fluxes that required extra processing to show a slope above the minimal detectable slope were not replaced by zero in SFP, whereas `fluxible`, with its  -->
-
-<!-- Raw gas concentration data of CO~2~, CH~4~ and N~2~O measured with LI-COR gas analysers (LI-7820, LI-870, and LI-7810; LI-COR Biosciences, Lincoln, NE, USA) were processed using the `licoread` and `fluxible` R packages, then compared to their corresponding output from SoilFluxPro [SFP \; @soilfluxpro \; @fig-sfp]. -->
-<!-- The HM model was used in `fluxible` as it is the closest to the SFP workflow. -->
-<!-- Both method seems to agree, but `fluxible` appears more conservative in detecting fluxes below the minimal detectable flux. -->
-<!-- This could be explained by the flux-by-flux approach of SoilFluxPro. -->
-<!-- Both method seems to agree, but a disagreement appears in the detection of fluxes below the minimal detectable flux. -->
 
 ```{r}
 #| label: fig-sfp
@@ -737,7 +293,7 @@ The two methods show a strong correlation (R > 0.9) for all gases and instrument
 #| warning: false
 #| fig-width: 10
 #| fig-height: 8
-#| fig-cap: "Comparison of flux output between SoilFluxPro (SFP; y axis) and the `fluxible` R package (x axis) for CO~2~, CH~4~ and N~2~O, measured with an LI-8250 soil chamber system using instruments LI-870, LI-7820 and LI-7810, with 8 8200-104 chambers. Continuous [black]{.mark} lines show the 1:1 line. Both linear (purple) and exponential (green) models were used. [In `fluxible`, the `exp_hm` model was used for the exponential fit as it is the closest to the SFP exponential workflow]{.mark}. The first 20 s of each measurement were cut before fitting in `fluxible`, which conservatively matches the deadband used in SoilFluxPro. CH~4~ data could not be fitted with the HM model due to the absence of curvature. [Similarly, a large portion of measurements had not enough curvature to be fitted with the HM model and were therefore discarded, hence the smaller n for the exponential model.]{.mark}"
+#| fig-cap: "Comparison of flux output between SoilFluxPro (SFP; y axis) and the `fluxible` R package (x axis) for CO~2~, CH~4~ and N~2~O, measured with an LI-8250 soil chamber system using instruments LI-870, LI-7820 and LI-7810, with 8 8200-104 chambers. Continuous black lines show the 1:1 line. Both linear (purple) and exponential (green) models were used. In `fluxible`, the `exp_hm` model was used for the exponential fit as it is the closest to the SFP exponential workflow. The first 20 s of each measurement were cut before fitting in `fluxible`, which conservatively matches the deadband used in SoilFluxPro. CH~4~ data could not be fitted with the HM model due to the absence of curvature. Similarly, a large portion of measurements had not enough curvature to be fitted with the HM model and were therefore discarded, hence the smaller n for the exponential model."
 
 library(ggplot2)
 library(ggpmisc)
@@ -799,38 +355,14 @@ ggsave("revision/figure_4.png", width = 10, heigh = 8)
 
 <!-- 144 words -->
 
-<!-- {{< include comparison.qmd >}} -->
-<!-- `fluxible` is not the only R package processing ecosystem gas fluxes. -->
-<!-- Here we aim to provide a brief comparison with other recent projects, and discuss the main differences. -->
-<!-- Other packages have been developped to process ecosystem gas fluxes. -->
-<!-- Several R packages [@wilsonFluxfinderPackageReproducible2024; @jurasinskiFluxFluxRate2022; @HMRpackage; @fussGasfluxesGreenhouseGas2024] have also been developped recently. -->
-<!-- Table @tbl-packages provides a brief comparison with `fluxible`. -->
-<!-- More packages have been developped [@rheaultGoFluxUserfriendlyWay2024; @Zhao2019; @brummerCo2fluxtentToolsNEE2024], but out of quality standards and support availability only those distributed on CRAN [@ComprehensiveArchiveNetwork] are presented here. -->
-
-<!-- `fluxible` was compared with other R packages also designed to process ecosystem gas fluxes (@tbl-packages). -->
 We compared `fluxible` with other R packages for ecosystem gas fluxes available on CRAN, based on criteria of design workflow and availability of functionality (@tbl-packages).
-<!-- `fluxible` was compared to other R packages with similar aims (limited to packages available on CRAN;@tbl-packages). -->
-<!-- The comparison was limited to R packages available on CRAN, and was based on criteria of design workflow and functionality availability. -->
-<!-- The comparison is based on criteria of design workflow and functionality availability. -->
-[The `fluxible` R package is the only one]{.mark} with a "one function per step" approach, which is essential to process other environmental data present in the dataset and allows easier outlier investigations.
+The `fluxible` R package is the only one with a "one function per step" approach, which is essential to process other environmental data present in the dataset and allows easier outlier investigations.
 While the packages `HMR` [@HMRpackage] and `gasfluxes` [@fussGasfluxesGreenhouseGas2024] also provide the choice between linear and exponential models, `fluxible` provides different exponential models and a quadratic one in addition to the linear one.
 The comparison of the quality control functionalities clearly shows that `fluxible` goes further, with a reproducible flagging of the fluxes based on user set thresholds and a quality summary at the dataset level.
 Finally, `fluxible` is the only package that processes other environmental data while calculating the fluxes.
 
 
-<!-- Comparing `fluxible` with other R packages designed to process ecosystem gas fluxes (@tbl-packages) shows that the main differences are the flexibility (one function per step, choice of model and flexibility in quality control) -->
 
-<!-- The main advantages of `fluxible` are that it (1) provides a homogeneous and reproducible workflow to calculate ecosystem gas fluxes, including quality control, (2) offers a choice of models and flexibility in quality control [@zhaoCalculationDaytimeCO22018] and (3) allows comparison of model fits at the dataset level, making it more flexible and universal than existing packages (@tbl-packages). -->
-<!-- Importing data to use with `fluxible` is simple as columns do not need to be named or organised in any specific way (see @sec-dataprep) [^4]. -->
-
-
-<!-- While most packages offer the possibility to choose the best fit for each measurement [@HMRpackage; @fussGasfluxesGreenhouseGas2024], `fluxible` processes the entire dataset with the same fit choices and quality thresholds. -->
-<!-- Treating the dataset  -->
-<!-- Considering the quality of the fits individually instead of treating the dataset in a homogenous way comes with a high risk of introducing bias as different models tend to under- or over- estimate fluxes [@johannessonOptimizingClosurePeriod2024, @pihlatieComparisonStaticChambers2013, @forbrichComparisonLinearExponential2010]. -->
-<!-- Unsystematically under- or over-estimating fluxes introduces, at best, a random error, and at worst, a constant bias in the data. -->
-<!-- To prevent this the `fluxible` R package is designed to process the entire dataset with the same fit choices and quality thresholds. -->
-<!-- The `fluxible` homogenous approach prevents this. -->
-<!-- What defines a dataset, however, is the user's decision and different fits could be used on several subsets of a dataset if appropriate. -->
 
  
 <!-- \newpage
@@ -927,88 +459,7 @@ Finally, `fluxible` is the only package that processes other environmental data 
 
 
 
-<!-- - `fluxible` provides a more flexible and universal tool than what is already existing. -->
-<!-- Besides its flexibility, the main differences are in the possibility to compare the model fits for each measurement and the capacity to read data direcly from loggers and instruments. -->
-<!-- Importing logger and instrument data files is covered by the `read_delim` [@readr2024] function, and examples are provided in the vignette "Preparing the data for `fluxible`" in the supplements. -->
 
-<!-- This approach, combined with its `tidyverse` [@tidyverse2019] based structure, has also the advantage of not prompting the user and making `fluxible` easy to integrate in a larger workflow, for example working with `targets` [@targetsRpackage2021]. -->
-
-
-
-
-<!-- The main difference between `fluxible` and other packages available are the homogeneity of the dataset processing, the workflow dynamic and the possibility to read data straight from an instrument. -->
-
-
-<!-- ## Homogenous treatment of dataset -->
-
-<!-- Most packages provide the possibility to assess the fit of different models for each measurements and choose, visually or based on statistical diagnostics, the best fitting model. -->
-<!-- In `fluxible`, the user chooses a model and then applies it to the entire dataset. -->
-<!-- Most package offer the possibility to compare model fitness for each measurement, improving the quality of the fit but risking introducing a bias in the final data as different fit tends to over or under estimate ecosystem gas fluxes. -->
-<!-- To prevent this the `fluxible` R package is designed to process the entire dataset with the same fit choices and quality thresholds. -->
-<!-- What defines a dataset, however, is the user's decision and different fits could be used on several subsets of a dataset if appropriate. -->
-<!-- Depending which sub group of the data is fitted with which model, this could lead to a bias in the final data set. -->
-
-
-<!-- To avoid introducing bias by using different models to process data from the same dataset, the `fluxible` R package focuses on a homogeneous treatment of the data. -->
-
-<!-- Different models tend to have different bias (CITE), the `fluxible` R package focuses on a homogeneous treatment of the data. -->
-
-
-<!-- Therefore, it seems better practice to apply the same model, and thus the same bias, to all the measurements in a dataset. -->
-<!-- It would be unforntunate, for example, too end up in a situation where one model systematically fits an experimental treatment better, which would introduce a bias in the analysis. -->
-<!-- Or, as ER tends to be fitted better with a linear model and NEE better with an exponential, and since it was already shown (CITE) that a linear model tends to under estimate fluxes and the exponential one tends to over estimate them,  -->
-<!-- Or, as ER tends to be fitted better with a linear model (under estimates fluxes) and NEE better with an exponential (over estimates fluxes), to over estimate GEP. (if that point is relevant I can produce an example) -->
-
-<!-- However, for users who would still like to use this strategy, different possibilities exist within the `fluxible` workflow. -->
-<!-- The function `flux_flag_count` (which is integrated in `flux_quality` but can also be used alone) provides a table summarising the qualilty of the dataset. -->
-<!-- The user can use different models on subset of their data, compare the quality, choose the best model for each subset and then re assemble the full dataset. -->
-<!-- Alternatively one can also use the diagnostics provided by `flux_quality` to add a rule to automatically select the best fit. -->
-
-<!-- `fluxible` does not provide the possibility to choose specific model for each measurement.
-This is because every model has a different bias, so it is more consistent to have the same bias on all the measurements to then be able to compare them.
-But since `fluxible` provides diagnostics of fits, users could run the function flux_fitting several times with different models, join the df and then apply a case_when to choose the best fit. -->
-
-<!-- ## Step by step workflow and integration in one's own script -->
-
-<!-- Because they offer the possibility to choose the best model fit for each measurement, most packages include a manual step, usually by prompting the user. -->
-<!-- This step causes issues when using those packages inside a bigger workflow, such as managing the data with targets [@targetsRpackage2021]. -->
-<!-- Once the type of fit and quality thresholds decided, `fluxible` runs without prompting the user. -->
-<!-- Its tidyverse [@tidyverse2019] based structure makes it easy to integrate in a targets [@targetsRpackage2021] workflow. -->
-<!-- Because `fluxible` runs without prompting the user, it fully integrates in a targets [@targetsRpackage2021] workflow. -->
-<!-- This is a major difference compared to other packages that are prompting the user to take a decision mid process, and need step by step actions to be taken. -->
-
-<!-- Thanks to this smooth integration, `fluxible` works well for field courses where it is preferable to spend as less times as possible on processing the field data to be able to do some analysis in a short amount of time. -->
-
-<!-- ## Reading files from instruments -->
-
-
-<!-- `fluxible` aims to be flexible and universal, independently from the instrument or logger used. -->
-<!-- The procedure to import files from logger and instruments, an ad-hoc use of the `read_delim` [@readr2024] function, is describe in the supplements (vignette "Preparing the data for `fluxible`"). -->
-
-
-<!-- The choice was made for `fluxible` to not provide dedicated functions to read raw data directly from loggers and insruments. -->
-<!-- Data files produced by instruments and loggers often need formatting before using them. -->
-<!-- Most of the time, it is a matter of providing the right arguments to `read_delim` [@readr2024] and/or run one of the map functions [@purrr2023] to read several files in one folder and join them in a single dataset. -->
-<!-- As all loggers and instruments are different, and their settings can change, writing functions for that seems endless. -->
-<!-- It also lacks relevance since the @readr2024 package already covers that. -->
-<!-- The vignette "Preparing the data for `fluxible`" provides guidelines and example on how to import the data. -->
-<!-- We do however provide examples showing how to read data and make them ready to use in the `fluxible` workflow in the vignette XXX (REF, will be included in supplements). -->
-<!-- 
-While this is basic R programming, it can be practical for teaching purposes (and prioritising time for data analysis) to have a function reading data straight from an instrument or a logger.
-The goFlux and fluxFinder packages [@rheaultGoFluxUserfriendlyWay2024; @wilsonFluxfinderPackageReproducible2024] include those. -->
-
-<!-- ## Teaching -->
-<!-- ## SoilFluxPro
-
-SoilFluxPro [@SoilFluxPro] is the software provided by LI-COR Environmental (Lincoln NE, USA), a manufacturer of gas analysers.
-While it covers most of the components of `fluxible`, and offers both the homogeneous and reproducible approach or a precise flux-by-flux approach, its stand alone software character has major inconvenients.
-First, it cannot be ran with a script approach, and therefore requires the user to interact and click intensively with a graphical interface.
-Then, it will not integrate in an R script or any reproducible pipeline like `targets` [@targetsRpackage2021].
-It does however record a log of all the actions taken by the user, but this can quickly become messy and will not allow for easy reproducibility.
-SoilFluxPro also only runs on specific operating systems, affecting its accessibility.
-It seems logical that LI-COR Environmental provides a graphical interface for their instruments, but large scale research work requires a tool that integrates better with the already existing tools for reproducible science, which `fluxible` does. -->
-
-<!-- # Conclusion -->
 
 # Conclusion and further developments
 
@@ -1016,13 +467,10 @@ It seems logical that LI-COR Environmental provides a graphical interface for th
 
 The `fluxible` R package provides a flexible way of processing raw data from flux chambers using a variety of different models and quality checks (see Appendix -@sec-example for a detailed example).
 The main advantages of `fluxible` are (1) a homogeneous workflow to process ecosystem gas fluxes, (2) a choice of models and flexibility in quality control, and (3) a transparent and reproducible workflow that can be integrated in an Open Science pipeline.
-<!-- `fluxible` is more flexible and universal than existing packages (@tbl-packages). -->
-
-<!-- By treating each dataset homogeneously and automating important decisions, `fluxible` aims to reduce time investments by the users and increase reproducibility and transparency of the calculated fluxes.   -->
 
 
-[Further developments of `fluxible` include (1) a segmentation tool to automatically select the focus window, based on residuals or on environmental variables, and (2) extanding the workflow to transform the concentration in mol per volume before fitting a model, which would account for temperature changes during the measurements better.]{.mark}
-[Feature requests are always welcome, and assistance through customised import functions is also possible.]{.mark}
+Further developments of `fluxible` include (1) a segmentation tool to automatically select the focus window, based on residuals or on environmental variables, and (2) extanding the workflow to transform the concentration in mol per volume before fitting a model, which would account for temperature changes during the measurements better.
+Feature requests are always welcome, and assistance through customised import functions is also possible.
 
 
 
@@ -1044,7 +492,7 @@ The main advantages of `fluxible` are (1) a homogeneous workflow to process ecos
 +============+==========================================================+======================================+
 |`linear`    |$a * t + b$                                               |$a$                                   |
 +------------+----------------------------------------------------------+--------------------------------------+
-|`quadratic` |$a * t² + b * t + c$                                      |[$2 * a * t_0 + b$]{.mark}            |
+|`quadratic` |$a * t² + b * t + c$                                      |$2 * a * t_0 + b$                     |
 +------------+----------------------------------------------------------+--------------------------------------+
 |`exp_zhao18`|$C_m + a * (t - t_0) + (C_0 - C_m) * \exp(-b * (t - t_0))$|$a + b * (C_m - C_0)$                 |
 +------------+----------------------------------------------------------+--------------------------------------+
@@ -1053,7 +501,7 @@ The main advantages of `fluxible` are (1) a homogeneous workflow to process ecos
 |`exp_hm`    |$C_m + (C_0 - C_m) * \exp(-b * t)$                        |$b * (C_m - C_0) * \exp(-b * t_0)$    |
 +------------+----------------------------------------------------------+--------------------------------------+
 
-: \normalsize Models available in the `flux_fitting` function and their slope at $t_0$. The slope parameter $t_0$ must be specified by the user in all models, except for the `linear` and `exp_zhao18` models. [$C_m$ is the maximum mixing ratio at equilibrium, $C_0$ is the initial concentration, and $a$ and $b$ are fitting parameters. A more detailed explanation is available in Appendix]{.mark} -@sec-theory. {#tbl-fits}
+: \normalsize Models available in the `flux_fitting` function and their slope at $t_0$. The slope parameter $t_0$ must be specified by the user in all models, except for the `linear` and `exp_zhao18` models. $C_m$ is the maximum mixing ratio at equilibrium, $C_0$ is the initial concentration, and $a$ and $b$ are fitting parameters. A more detailed explanation is available in Appendix -@sec-theory. {#tbl-fits}
 
 \normalsize
 
@@ -1131,7 +579,7 @@ The main advantages of `fluxible` are (1) a homogeneous workflow to process ecos
 |Transformation of other variables when calculating    |yes                               |no                           |no                                                |no                                                                          |
 |fluxes                                                |                                  |                             |                                                  |                                                                            |
 +------------------------------------------------------+----------------------------------+-----------------------------+--------------------------------------------------+----------------------------------------------------------------------------+
-|Additional calculations                               |[`flux_diff`, `flux_lrc`]{.mark}  |GPP modelisation based on ER |no                                                |no                                                                          |
+|Additional calculations                               |`flux_diff`, `flux_lrc`           |GPP modelisation based on ER |no                                                |no                                                                          |
 |                                                      |                                  |and PAR                      |                                                  |                                                                            |
 +------------------------------------------------------+----------------------------------+-----------------------------+--------------------------------------------------+----------------------------------------------------------------------------+
 
@@ -1171,8 +619,6 @@ options(tidyverse.quiet = TRUE)
 In this example we will process a dataset from the Plant Functional Traits Course 6 [@vandvikPlantTraitsAssociated2025].
 Net ecosystem exchange (NEE), ecosystem respiration (ER), air and soil temperature and photosynthetically active radiation (PAR) were recorded over the course of 24 hours at an experimental site called Liahovden, situated in an alpine grassland in southwestern Norway.
 Those data are available in the `fluxible` R package.
-<!-- This example uses the data that were recorded during the Plant Functional Traits Course 6 (PFTC6) in Norway in 2022 at the site called Liahovden. -->
-<!-- (CITE when data paper out). -->
 To work with your own data, you need to import them as a dataframe object in your R session.
 For import examples, please see Appendix -@sec-dataprep.
 
@@ -1180,8 +626,7 @@ For import examples, please see Appendix -@sec-dataprep.
 
 The CO~2~ concentration data as well as air and soil temperature and PAR were recorded in a dataframe named `co2_liahovden`.
 The metadata for each measurement are in a dataframe named `record_liahovden`.
-This dataframe contains the starting time of each measurement, the measurement type (NEE or ER)[, the measurement round,]{.mark} and the unique plot ID (called turfs in this experiment).
-<!-- The type of measurement describes if it was NEE, measured with a transparent chamber, or ER, measured with a dark chamber. -->
+This dataframe contains the starting time of each measurement, the measurement type (NEE or ER), the measurement round, and the unique plot ID (called turfs in this experiment).
 
 Structure of the CO~2~ concentration data (`co2_liahovden`):
 ```{r}
@@ -1204,13 +649,11 @@ str(record_liahovden, width = 70, strict.width = "cut")
 
 ## Attributing meta-data
 
-[The gas concentration was logged continuously in a single file and therefore we need to trim the irrelevant data before and in between measurements and attribute meta data (flux ID, turf ID, type, and measurement round) to each row of gas concentration.]{.mark}
-<!-- We use the `flux_match` function to slice each measurement in the CO~2~ concentration data and discard the recordings in between. -->
+The gas concentration was logged continuously in a single file and therefore we need to trim the irrelevant data before and in between measurements and attribute meta data (flux ID, turf ID, type, and measurement round) to each row of gas concentration.
 The two inputs are `raw_conc`, the dataframe containing field measured raw gas concentration, and `field_record`, the meta data dataframe with the start of each measurement.
 Then `f_datetime` is the column containing date and time in the gas concentration dataframe, and `start_col` the column containing the start date and time of each measurement in the meta data dataframe.
-<!-- The column containing the gas concentration in the gas concentrationd dataframe `f_conc`. -->
 The length of the measurements is provided with `measurement_length` (in seconds).
-[Alternatively, a column indicating the end time and date of each measurement can be provided to `end_col`.]{.mark}
+Alternatively, a column indicating the end time and date of each measurement can be provided to `end_col`.
 The `time_diff` argument allow to account for a consistent time difference (in seconds) between the two inputs.
 This value is added to the datetime column of the gas concentration dataset.
 
@@ -1233,9 +676,7 @@ conc_liahovden <- flux_match(
 ## Model fitting
 
 We fit a model and obtain the slope at $t_0$, which is needed for the flux calculation, with the `flux_fitting` function.
-<!-- Before calculating fluxes we need to fit a model to each measurement and estimate a slope of the concentration changing rate. -->
-<!-- We use the `flux_fitting` function with the model provided by @zhaoCalculationDaytimeCO22018. -->
-In this example we use the `exp_zhao18` model [@zhaoCalculationDaytimeCO22018][, which is the default setting as it is more robust and recent]{.mark}.
+In this example we use the `exp_zhao18` model [@zhaoCalculationDaytimeCO22018], which is the default setting as it is more robust and recent.
 The `exp_zhao18` is a mix of an exponential and linear model - thus fitting all fluxes independently from curvature - and includes $t_0$ as a fitting parameter (its implementation is described in Appendix -@sec-theory).
 A similar model but with the option to manually set $t_0$ is `exp_tz`.
 Other available models are: `linear` for a linear fit, `quadratic` for a quadratic fit, and `exp_hm` for the original HM model [@hutchinsonImprovedSoilCover1981 \; see @tbl-fits for an overview of the available models].
@@ -1268,8 +709,6 @@ slopes_liahovden <- flux_fitting(
 )
 ```
 
-<!-- The columns `f_start`, `f_end`, and `f_fluxid` are created by `flux_match`. -->
-<!-- If they have not been renamed, default values can be used. -->
 
 ## Quality checks and visualisations
 
@@ -1304,36 +743,6 @@ flux_flag_count(flags_liahovden)
 ```
 
 
-  <!-- f_fluxid = f_fluxid, # unique flux ID, provided by flux_match
-  f_slope = f_slope, # slope at t_zero, prodided by flux_fitting
-  f_time = f_time, # elapsed time for each measurement, provided by flux_fitting
-  f_start = f_start, # start of each measurement, provided by flux_match
-  f_end = f_end, # end of each measurement, provided by flux_match
-  f_fit = f_fit, # modelled gas concentration, provided by flux_fitting
-  f_cut = f_cut, # indicating if a row is cut or kept, provided by flux_fitting
-  f_pvalue = f_pvalue, # p-value of the fit (linear and quadratic), provided by flux_fitting
-  f_rsquared = f_rsquared, # R² of the fit (linear and quadratic), provided by flux_fitting
-  f_slope_lm = f_slope_lm, # slope of the linear model, provided by flux_fitting
-  f_fit_lm = f_fit_lm, # modelled gas concentration with the linear model, provided by flux_fitting
-  f_b = f_b, # b parameter (exponential fits), provided by flux_fitting
-  force_discard = c(), # vector of flux IDs to force discard
-  force_ok = c(), # vector of flux IDs to force ok
-  force_zero = c(), # vector of flux IDs to force zero
-  force_lm = c(), # vector of flux IDs to force the use of the linear model
-  force_exp = c(), # vector of flux IDS to force the use of the exponential model
-  ratio_threshold = 0.5, # threshold under which a measurement is flagged as having not enough data
-  gfactor_threshold = 10, # threshold above which a measurement is flagged as showing an exponential or quadratic fit too different from the linear fit
-  fit_type = c(), # same as fit_type in flux_fitting and needed only if the slopes_df dataframe has been stripped of its attributes
-  ambient_conc = 421, # ambient gas concentration at field site
-  error = 100, # error of the setup, used to detect measurements starting outside of a realistic range
-  pvalue_threshold = 0.3, # threshold of the p-value
-  rsquared_threshold = 0.7, # threshold of the R²
-  rmse_threshold = 25, # threshold for the root mean square error (RMSE)
-  cor_threshold = 0.5, # threshold for the correlation coefficient between time and gas concentration
-  b_threshold = 1, # threshold for the b value, borders an interval with its opposite value
-  cut_arg = "cut", # indicating cut row in f_cut column, provided by flux_fitting
-  instr_error = 5, # error of the instrument, used to calculate the minimal detectable slope
-  kappamax = FALSE # TRUE to use the kappamax method -->
 
 The function `flux_plot` provides plots for a visual assessment of the measurements, explicitly displaying the quality flags from `flux_quality` and the cuts from `flux_fitting` (@fig-explot).
 Note that different values than the default can be provided to `scale_x_datetime` and `facet_wrap` by providing lists of arguments to `scale_x_datetime_args` and `facet_wrap_args` respectively.
@@ -1344,7 +753,7 @@ Note that different values than the default can be provided to `scale_x_datetime
 #| fig-height: 7
 #| echo: TRUE
 #| message: FALSE
-#| fig-cap: "Output of `flux_plot` for fluxid 54, 95, 100 and 101. [With quality flags and diagnostics from `flux_quality`, the slope at $t_0$ (continuous line), the model fit (dashed line), the linear fit (dotted line), and the raw gas concentration (dots). The colours show the quality flags (green for `ok`, red for `discard` and purple for `zero` with default settings) and cuts (same colour as `discard`). The gray vertical line indicates $t_0$ (a fitting parameter when using the `exp_zhao18` model, otherwise user defined in `flux_fitting`). The g-factor is calculated as slope/linear slope, and b is the b parameter inside the exponential model. Concentration is in ppm in this example. Due to poor quality (strong peak at the start), `flux_fitting` could not provide a decent fit for fluxid 101. This was detected by `flux_quality` which flagged it as discard.]{.mark}"
+#| fig-cap: "Output of `flux_plot` for fluxid 54, 95, 100 and 101. [With quality flags and diagnostics from `flux_quality`, the slope at $t_0$ (continuous line), the model fit (dashed line), the linear fit (dotted line), and the raw gas concentration (dots). The colours show the quality flags (green for `ok`, red for `discard` and purple for `zero` with default settings) and cuts (same colour as `discard`). The gray vertical line indicates $t_0$ (a fitting parameter when using the `exp_zhao18` model, otherwise user defined in `flux_fitting`). The g-factor is calculated as slope/linear slope, and b is the b parameter inside the exponential model. Concentration is in ppm in this example. Due to poor quality (strong peak at the start), `flux_fitting` could not provide a decent fit for fluxid 101. This was detected by `flux_quality` which flagged it as discard."
 flags_liahovden |>
   # we show only a sample of the plots in this example
   dplyr::filter(f_fluxid %in% c(54, 95, 100, 101)) |>
@@ -1363,7 +772,7 @@ flags_liahovden |>
   )
 ```
 
-[To export the plots as pdf without printing them in one's R session, which we recommend for large datasets, the code looks like this (`pdfpages` produces nice A4 pages, `longpdf` produces a single long pdf file, which is much faster):]{.mark}
+To export the plots as pdf without printing them in one's R session, which we recommend for large datasets, the code looks like this (`pdfpages` produces nice A4 pages, `longpdf` produces a single long pdf file, which is much faster):
 
 ```{r}
 #| label: plot_pdf
@@ -1385,17 +794,17 @@ If the argument `f_plotname` is left empty (the default), the name of the `slope
 The pdf file will be saved in a folder named `f_quality_plots`.
 
 ::: {.callout-tip icon=false title="Handling lots of data?"}
-[Automated chambers produce a lot of data, and visually inspecting all the fluxes might not be a reasonable option.]{.mark}
-[In such cases, it is possible to first calculate the fluxes without plotting them (`flux_calc` takes the output of `flux_quality` as input) and target fluxes to visually inspect afterwards.]{.mark}
-[Here are some suggestions on how to select which fluxes to inspect:]{.mark}
+Automated chambers produce a lot of data, and visually inspecting all the fluxes might not be a reasonable option.
+In such cases, it is possible to first calculate the fluxes without plotting them (`flux_calc` takes the output of `flux_quality` as input) and target fluxes to visually inspect afterwards.
+Here are some suggestions on how to select which fluxes to inspect:
 
-- [target specific campaigns or dates]{.mark}
-- [random sampling of flux IDs, campaigns, or dates]{.mark}
-- [target measurements based on other variables (wind speed for example)]{.mark}
-- [apply over conservative thresholds in `flux_quality` (therefore assuming only false negative) and inspect flagged measurements only]{.mark}
-- [do quality control statistics, targeting unrealistic changes in fluxes over time or outliers]{.mark}
+- target specific campaigns or dates
+- random sampling of flux IDs, campaigns, or dates
+- target measurements based on other variables (wind speed for example)
+- apply over conservative thresholds in `flux_quality` (therefore assuming only false negative) and inspect flagged measurements only
+- do quality control statistics, targeting unrealistic changes in fluxes over time or outliers
 
-[Filtering the data directly before plotting is made convenient as `fluxible` follows the `tidyverse` grammar [@tidyverse2019], as shown in the example below.]{.mark}
+Filtering the data directly before plotting is made convenient as `fluxible` follows the `tidyverse` grammar [@tidyverse2019], as shown in the example below.
 
 ```{r}
 #| label: ex-plot-filter
@@ -1415,34 +824,24 @@ flags_lia |> # the output of flux_quality
 :::
 
 Based on the quality flags and the plots, the user can decide to run `flux_fitting` and/or `flux_quality` again with different parameters.
-<!-- [If a majority of fluxes show noise or other quality issues at the end of the measurement, like flux 100 in the example, the user could decide to redefine the focus window with the `start_cut`, `end_cut and `cut_direction` arguments.]{.mark} -->
-<!-- [The `cut_direction` argument decides how the focus window is defined: `"none"` (default) defines the focus window at `start + start_cut` to `end - end_cut`, `"from_start"` makes it `start + start_cut` to `start + end_cut`; "from_end" makes it `end - start_cut` to `end - end_cut`.]{.mark} -->
-<!-- [This accommodates if the initial measurements' length are inconsistent but the user wants to cut all of them at the same length.]{.mark} -->
-<!-- [In case subsets of the measurements require a different focus window, we recommend applying `flux_fitting` to specific subset separately and then rebinding the dataset.]{.mark} -->
-<!-- [And if a detailed flux-by-flux cutting is needed, a `field_record` including an end column should be used in `flux_match`.]{.mark} -->
 
-[If a majority of fluxes show anomalies issues at the end of the measurement, like flux 100 in the example, the user could decide to prune the last 60 seconds of the measurements.]{.mark}
-<!-- Here we will cut the last 60 seconds of the fluxes (cutting the last third). -->
-<!-- We also detected a flux that do not look correct. -->
+If a majority of fluxes show anomalies issues at the end of the measurement, like flux 100 in the example, the user could decide to prune the last 60 seconds of the measurements.
 Sometimes measurements will pass the automated quality control but the user might have reasons to still discard them (or the opposite).
 That is what the `force_discard`, `force_ok`, `force_lm` and `force_zero` arguments are for.
-<!-- Or course -->
-<!-- For the sake of reproducibility, this argument should be the last option and be accompanied with a justification. -->
-In our example (@fig-explot), for the measurement with fluxID 101, the exponential model is not providing a good fit (resulting in the flux being discarded) due to some noise at the start of the measurement [and it gets flagged to be discarded]{.mark}.
-<!-- We take the decision to force the use of the linear model instead, because it seems to fit much better (given that the flux looks quite flat, we could also force it to be zero). -->
-[The user could decide to replace that flux by zero instead (that would need to be reported and defended).]{.mark}
-This is achieved with [`force_zero = 101`]{.mark}.
+In our example (@fig-explot), for the measurement with fluxID 101, the exponential model is not providing a good fit (resulting in the flux being discarded) due to some noise at the start of the measurement and it gets flagged to be discarded.
+The user could decide to replace that flux by zero instead (that would need to be reported and defended).
+This is achieved with `force_zero = 101`.
 Several fluxIDs can be provided to the `force_` arguments by providing a vector: `force_zero = c(100, 101)`.
 
 ::: {.callout-tip icon=false title="Redefining the focus window"}
-[It might be sometime necessary to redefine the focus window (the portion of the flux used for model fitting) in case of consistent anomalies at one or both ends of the measurements.]{.mark}
-[This is done with arguments `start_cut`, `end_cut` and `cut_direction` in `flux_fitting`.]{.mark}
-[The `cut_direction` argument decides how the focus window is defined: `"none"` (default) defines the focus window at `start + start_cut` to `end - end_cut`, `"from_start"` makes it `start + start_cut` to `start + end_cut`; `"from_end"` makes it `end - start_cut` to `end - end_cut`.]{.mark}
-[This accommodates if the initial measurements' length are inconsistent but the user wants to cut all of them at the same length.]{.mark}
+It might be sometime necessary to redefine the focus window (the portion of the flux used for model fitting) in case of consistent anomalies at one or both ends of the measurements.
+This is done with arguments `start_cut`, `end_cut` and `cut_direction` in `flux_fitting`.
+The `cut_direction` argument decides how the focus window is defined: `"none"` (default) defines the focus window at `start + start_cut` to `end - end_cut`, `"from_start"` makes it `start + start_cut` to `start + end_cut`; `"from_end"` makes it `end - start_cut` to `end - end_cut`.
+This accommodates if the initial measurements' length are inconsistent but the user wants to cut all of them at the same length.
 
-[Those parameters are applied homogeneously to the entire dataset and do not allow for flux specific focus window.]{.mark}
-[In case subsets of the measurements require a different focus window, we recommend applying `flux_fitting` to specific subset separately and then rebinding the dataset.]{.mark}
-[And if a detailed flux-by-flux cutting is needed, a `field_record` including an end column should be used in `flux_match` instead of a fixed measurement length.]{.mark}
+Those parameters are applied homogeneously to the entire dataset and do not allow for flux specific focus window.
+In case subsets of the measurements require a different focus window, we recommend applying `flux_fitting` to specific subset separately and then rebinding the dataset.
+And if a detailed flux-by-flux cutting is needed, a `field_record` including an end column should be used in `flux_match` instead of a fixed measurement length.
 :::
 
 The function `flux_fitting` is run again, with an end cut of 60 seconds:
@@ -1460,7 +859,7 @@ fits_liahovden_60 <- conc_liahovden |>
     end_cut = 60 # we decided to cut the last 60 seconds of the measurements
   )
 ```
-Then `flux_quality` again, [possibly forcing a "zero" flag]{.mark} for fluxID 101:
+Then `flux_quality` again, possibly forcing a "zero" flag for fluxID 101:
 ```{r}
 #| label: flag_exp_cut
 #| fig-width: 8
@@ -1479,7 +878,7 @@ And finally `flux_plot` again to check the output (@fig-plot_exp_cut).
 #| fig-height: 9
 #| echo: TRUE
 #| message: FALSE
-#| fig-cap: "Output of `flux_plot` for fluxid 54, 95, 100 and 101, after quality check. [Concentration is in ppm in this example.]{.mark}"
+#| fig-cap: "Output of `flux_plot` for fluxid 54, 95, 100 and 101, after quality check. [Concentration is in ppm in this example."
 flags_liahovden_60 |>
   dplyr::filter(f_fluxid %in% c(54, 95, 100, 101)) |>
   flux_plot(
@@ -1498,10 +897,10 @@ flags_liahovden_60 |>
 
 ::: {.callout-tip icon=false title="The importance of reporting"}
 
-[Because of `fluxible`'s flexibility in choice of models, quality thresholds and focus window selection, it is crucial that users report the applied parameters when describing their method, for reproducibility purpose.]{.mark}
-[In the example above, flux ID 95 changed quality flag after changing the focus window.]{.mark}
-[Since the fit and its diagnosis are now done on fewer points, it can indeed change the quality flag.]{.mark}
-[Note that all those parameters are functions' arguments, making reporting as simple as sharing clean and documented code.]{.mark}
+Because of `fluxible`'s flexibility in choice of models, quality thresholds and focus window selection, it is crucial that users report the applied parameters when describing their method, for reproducibility purpose.
+In the example above, flux ID 95 changed quality flag after changing the focus window.
+Since the fit and its diagnosis are now done on fewer points, it can indeed change the quality flag.
+Note that all those parameters are functions' arguments, making reporting as simple as sharing clean and documented code.
 
 :::
 
@@ -1510,10 +909,8 @@ flags_liahovden_60 |>
 Now that we are satisfied with the fit, we can calculate fluxes with `flux_calc`.
 The calculation (@eq-flux) is using the slope, which can either be `f_slope` (provided by `flux_fitting` and not quality checked) or `f_slope_corr` which is the recommended slope after quality check with `flux_quality`.
 Here the volume is defined as a constant for all the measurements but it is also possible to provide the volume as a separate column (`setup_volume`).
-<!-- [Calculation parameters that are variables (`setup_volume` or `atm_pressure` for example) need to be in the dataframe when running `flux_calc`, but if does not matter if they ]{.mark} -->
 The `cols_ave` arguments indicates which column(s), i.e. the environmental data, should be averaged for each flux.
 When setting the argument `cut = TRUE` (default), the same cut that was applied in `flux_fitting` will be used.
-<!-- , applying the same cut that were applied in `flux_fitting` (if `cut = TRUE`, which is the default). -->
 The `cols_sum` and `cols_med` do the same for sum and median respectively.
 In the output, those columns get appended with the suffixes `_ave`, `_sum` and `_med` respectively.
 Here we recorded PAR and soil temperature in the same dataset and would like their average for each measurement.
@@ -1521,11 +918,9 @@ The `cols_keep` arguments indicates which columns should be kept.
 As `flux_calc` transforms the dataframe from one row per datapoint of gas concentration to one row per flux, the values in the columns specified in `cols_keep` have to be constant within each measurement (if not, rows will be repeated to accommodate for non constant values).
 Other columns can be nested in a column called `nested_variables` with `cols_nest` (`cols_nest = "all"` will nest all the columns present in the dataset, except those provided to `cols_keep`).
 
-<!-- The units of gas concentration, `conc_unit`, can be ppm or ppb. -->
-<!-- The units of the calculated flux can be $mmol\ m^{-2}\ h^{-1}$ (`flux_unit = "mmol"`) or $\mu mol\ m^{-2}\ h$ (`flux_unit = "micromol"`). -->
-[The units of gas concentration, `conc_unit`, can be $mmol\ mol^{-1}$, $ppm$, $ppb$ or $ppt$.]{.mark}
-[The units of the calculated flux is decided by the user and should be in the form $amount\ surface^{-1}\ time^{-1}$.]{.mark}
-[Amount can be $mol$, $mmol$, $\mu mol$, $nmol$ or $pmol$; surface can be $m^2$, $dm^2$ or $cm^2$; time can be $day$, $hour$, $minute$ or $second$.]{.mark}
+The units of gas concentration, `conc_unit`, can be $mmol\ mol^{-1}$, $ppm$, $ppb$ or $ppt$.
+The units of the calculated flux is decided by the user and should be in the form $amount\ surface^{-1}\ time^{-1}$.
+Amount can be $mol$, $mmol$, $\mu mol$, $nmol$ or $pmol$; surface can be $m^2$, $dm^2$ or $cm^2$; time can be $day$, $hour$, $minute$ or $second$.
 Temperature in the input can be in Celsius, Kelvin or Fahrenheit, and will be returned in the same unit in the output.
 
 ```{r}
@@ -1549,38 +944,6 @@ fluxes_liahovden_60 <- flux_calc(
 ```
 
 
-<!-- The output is in $mmol/m^2/h$ and the calculation is as follow: -->
-
-<!-- <img src="https://render.githubusercontent.com/render/math?math=flux=slope\times \frac{P\times V}{R\times T\times A}"> -->
-<!-- 
-$$
- \text{flux}=\text{slope}\times \frac{P\times V}{R\times T\times A}
-$$
-
-where
-
-flux: the flux of gas at the surface of the plot (mmol/m^2^/h)
-
-slope: slope estimate (ppm*s^-1^)
-
-P: pressure (atm)
-
-V: volume of the chamber and tubing (L)
-
-R: gas constant (0.082057 L\*atm\*K^-1^\*mol^-1^)
-
-T: chamber air temperature (K)
-
-A: area of chamber frame base (m^2^) -->
-
-<!-- The conversion from micromol/m^2^/s to mmol/m^2^/h is included in the function. -->
-
-<!-- Fluxes were calculated in five steps from raw gas concentration data and the process is entirely reproducible. -->
-
-<!-- Next we can calculated gross ecosystem production (GEP) and plot the results: -->
-
-
-<!-- Structure of the dataframe with calculated fluxes, `fluxes_liahovden_60`: -->
 ```{r}
 #| label: fluxes-str
 #| echo: false
@@ -1593,22 +956,12 @@ str(fluxes_liahovden_60, width = 70, strict.width = "cut")
 
 CO~2~ flux chambers and tents can be used to measure net ecosystem exchange (NEE) and ecosystem respiration (ER) if the user manipulates the light levels in the chamber.
 The difference between the two is the gross primary production (GPP), which cannot be measured isolated from ER but is often a variable of interest.
-<!-- This part is specific to CO~2~ fluxes. -->
-<!-- Carbon fluxes are governed by gross ecosystem production (GEP), the amount of CO2 plants take up from the atmosphere through photosynthesis, and ecosystem respiration (ER), the transfer of CO~2~ from the ecosystem to the atmosphere. -->
-<!-- The main components of ER are soil respiration and plant respiration, and at the landscape scale, respiration from larger heterotrophic organisms. -->
-<!-- Gross ecosystem production cannot be measured because ER is an ongoing background process. -->
-<!-- It is not possible to isolate GEP to measure it as ER is an ongoing background process. -->
-<!-- Instead, net ecosystem exchange (NEE), the sum of GEP and ER, is measured, and we then calculate GEP. -->
-<!-- As GEP cannot be measured it is calculated as $GEP = NEE - ER$. -->
-[The function `flux_diff` calculates the difference between two types of fluxes as $diff = type\_a - type\_b$ and returns a dataset in long format, with type_a, type_b and diff as flux type.]{.mark}
-[Any variables specified by the user (`cols_keep` argument) will be filled with their values corresponding to the type_a measurement.]{.mark}
-[Other type of flux than type_a and type_b, if present in the dataset (e.g. light response curves, soil respiration) are kept.]{.mark}
-<!-- The timestamps and PAR value from the NEE measurement are also attributed to the GEP one and any variable specified by the user. -->
-[Each type_a and type_b measurements need to be paired together for this calculation.]{.mark}
+The function `flux_diff` calculates the difference between two types of fluxes as $diff = type\_a - type\_b$ and returns a dataset in long format, with type_a, type_b and diff as flux type.
+Any variables specified by the user (`cols_keep` argument) will be filled with their values corresponding to the type_a measurement.
+Other type of flux than type_a and type_b, if present in the dataset (e.g. light response curves, soil respiration) are kept.
+Each type_a and type_b measurements need to be paired together for this calculation.
 The `id_cols` argument specifies which columns should be used for pairing (e.g., date, campaign).
-[The `flux_diff` function can be used to calculate GPP in the case of CO$_2$ fluxes, or transpiration with H$_2$O fluxes.]{.mark}
-<!-- Since those measurements were done continuously for 24 hours, we added a pairID column, which is pairing each NEE measurement with its following ER measurement. -->
-<!-- This pairs the NEE and ER measurements of the same plot and same round of measurement because we systematically measured ER after NEE for each plot. -->
+The `flux_diff` function can be used to calculate GPP in the case of CO$_2$ fluxes, or transpiration with H$_2$O fluxes.
 
 ```{r}
 #| label: gpp-lia
@@ -1634,7 +987,7 @@ str(gpp_liahovden_60, width = 70, strict.width = "cut")
 
 ```
 
-[The fluxes can then be transformed in units more suited for publishing, for example $mg * m^{-2} * h^{-1}$:]{.mark}
+The fluxes can then be transformed in units more suited for publishing, for example $mg * m^{-2} * h^{-1}$:
 
 ```{r}
 #| label: mg-transform
@@ -1677,8 +1030,6 @@ library(ggplot2)
 
 # Preparing the data for `fluxible` {.appendix #sec-dataprep}
 
-<!-- {{< include data-prep.qmd >}} -->
-<!-- Providing functions to read data files directly from loggers or instruments would be an endless tasks, as there are countless varieties of formats, and they their structure tends to change at each update. -->
 Loggers and field equipment provide many different datasets format.
 The `readr::read_delim` [@readr2024] function works perfectly in most cases, given that the data are in a delimited file.
 
@@ -1694,7 +1045,6 @@ We however advise that those names do not contain spaces or special characters.
 ### Input `raw_conc`
 The input `raw_conc` is the file with the gas concentration measured over time, typically the file exported by the logger or instrument, and needs to fulfill the following criteria:
 
-<!-- - Columns that will be used in `fluxible` do not contain space or special characters -->
 - A column with gas concentration as numeric values
 - A column in datetime format (`yyyy-mm-dd hh:mm:ss`) corresponding to each data point of gas concentration
 
@@ -1704,7 +1054,6 @@ The input `field_record` is the metadata file that contains the information of w
 It can also provide other meta data, such as campaign, site, type of measurement, etc.
 This file should contain:
 
-<!-- - Colum that will be used in `fluxible` do not contain space or special characters -->
 - A column indicating the start of each measurement in datetime format (`yyyy-mm-dd hh:mm:ss`)
 - If the length of the measurements is not a constant: a column containing the end of each measurement in datetime format (`yyyy-mm-dd hh:mm:ss`)
 
@@ -1714,27 +1063,27 @@ The `flux_match` function only intends to attribute a unique `flux_id` to each m
 Depending on your setup, this step might not be necessary.
 The `flux_fitting` function is the step after `flux_match` and its input should check the following points:
 
-<!-- - Columns that will be used in `fluxible` do not contain space or special characters -->
 - A gas concentration column as numeric
 - A column in datetime format (`yyyy-mm-dd hh:mm:ss`) corresponding to each gas concentration data points
 - A column with a unique ID for each measurement
 - A column indicating the start of each measurement in datetime format (`yyyy-mm-dd hh:mm:ss`)
 - A column indicating the end of each measurement in datetime format (`yyyy-mm-dd hh:mm:ss`)
 
-[The datetime column will be used to model the concentration over time, the unique ID to identify the different flux measurements, and the start and end are needed to apply the cuts on the focus window, when plotting, and determining the length of the flux to provide quality flags.]{.mark}
-[Row numbers could be used at the conditions that i) the gas concentration measurement frequency is a constant, and ii) there are no missing data.]{.mark}
+The datetime column will be used to model the concentration over time, the unique ID to identify the different flux measurements, and the start and end are needed to apply the cuts on the focus window, when plotting, and determining the length of the flux to provide quality flags.
+Row numbers could be used at the conditions that i) the gas concentration measurement frequency is a constant, and ii) there are no missing data.
 
 ### Defining your dataset
+
 `fluxible` treats the entire dataset homogeneously in terms of choice of model to fit the data and quality control.
 This is because every step in this process has a risk of adding a bias to the final data (for example, a linear fit tends to under estimate fluxes while an exponential one tends to over estimate fluxes).
 By treating the data homogeneously, the bias are consistent and therefore will affect further analysis less.
-<!-- Homogeneous treatement of the dataset also means that the dataset should be carefully defined, as to avoid introducing bias (fitting all treatment A with a linear model and all treatment B with an exponential model might show that B has higher fluxes than than A, because of the way those models tend to under and over estimate fluxes). -->
 Measurements done under similar conditions and with the same equipment should ideally be processed together.
 
 Note that the "flux after flux" approach, treating each measurement individually in terms of fit, cut and quality control, is also possible (but this is not what `fluxible` is optimised for!).
 It would require looping the `flux_fitting` and `flux_quality` (optionally `flux_plot` too for visualisation) functions on each flux ID with a prompt asking for the arguments.
 
 ## Importing a single file
+
 In this example we will import the file `26124054001.#00`, which is a text file extracted from a Squirrel Data Logger 2010 Series (Grant Instruments) through SquirrelView software.
 The first thing to do when importing a file with `read_delim` is to open the file in a text editor to look at its structure (@fig-header).
 
@@ -1742,7 +1091,6 @@ The first thing to do when importing a file with `read_delim` is to open the fil
 
 We will read the file with `read_delim`, and then use `rename` and `mutate` [from the `dplyr` package \; @dplyr2023] to transform the columns into what we want, and `dmy_hms` from the `lubridate` package [@lubridate2011] to get our datetime column in the right format:
 
-<!-- [^2]: both `dplyr` and `readr` are part of the `tidyverse` [@tidyverse2019]. -->
 
 
 ```{r}
@@ -1798,7 +1146,6 @@ raw_conc <- raw_conc |>
 str(raw_conc, width = 70, strict.width = "cut", give.attr = FALSE)
 ```
 
-<!-- Note that it is also possible to use the `col_names` and `col_select` arguments directly in `read_delim` (but it is more prone to errors): -->
 
 ```{r}
 #| message: FALSE
@@ -1847,21 +1194,16 @@ raw_conc <- list.files( # list the files
 
 ## The one file per flux approach {#sec-onefileflux}
 
-[`fluxible` can also be used with data that were recorded with one file per flux and the file names as flux ID.
+`fluxible` can also be used with data that were recorded with one file per flux and the file names as flux ID.
 In that case, `flux_match` can be skipped as we will directly import the data with the flux IDs, and start and end of each flux measurements.
 In this example we use the fluxible default column names to make it easier for the rest of the data processing.
 The measurement lengths are based on the start and end of the files, which might not be accurate depending on the field routine.
-This can be adjusted with the arguments `start_cut`, `end_cut` and `cut_direction` in `flux_fitting`:]{.mark}
-<!-- By default, `flux_fitting` cuts the focus window as `start + start_cut` to `end - end_cut`. -->
-<!-- The argument `cut_direction` allows to change that: -->
+This can be adjusted with the arguments `start_cut`, `end_cut` and `cut_direction` in `flux_fitting`:
 
-- [`cut_direction = "none"` (default) means the focus window is defined as `start + start_cut` to `end - end_cut`]{.mark}
-- [`cut_direction = "from_start"` means the focus window is defined as `start + start_cut` to `start + end_cut`]{.mark}
-- [`cut_direction = "from_end"` means the focus window is defined as `end - start_cut` to `end - end_cut`]{.mark}
+- `cut_direction = "none"` (default) means the focus window is defined as `start + start_cut` to `end - end_cut`
+- `cut_direction = "from_start"` means the focus window is defined as `start + start_cut` to `start + end_cut`
+- `cut_direction = "from_end"` means the focus window is defined as `end - start_cut` to `end - end_cut`
 
-<!-- `fluxible` is designed to process data that were measured continuously (in a single or several files) and a `field_record` that records what was measured when. -->
-<!-- Another strategy while measuring gas fluxes on the field is to create a new file for each measurement, with the file name as the flux ID. -->
-<!-- The approach is similar to reading multiple files, except we add a column with the file name, and can then by-pass `flux_match`. -->
 
 ```{r}
 #| message: FALSE
@@ -1909,141 +1251,7 @@ raw_conc <- list.files( #listing all the files
 str(raw_conc, width = 70, strict.width = "cut", give.attr = FALSE)
 ```
 
-<!-- ## The tricky one -->
 
-<!-- (should I keept that?) -->
-
-<!-- What happens when you extract a logger file in csv using a computer with settings using comma as a decimal point (which is quite standard in Europe)? -->
-<!-- Well, you get a comma separated values (csv) file, with decimals separated by... comma (@fig-tricky). -->
-
-<!-- Ideally the file should have been extracted in European csv, which means comma for decimals and semi-colon as column separator. -->
-<!-- But here we are. -->
-
-<!-- ![Screenshot of the file `011023001.#01` opened in a text editor. We can see that it is comma separated, but that the decimal point is also a comma. Additionally, we see that some variables were measured only every 10 seconds, meaning that each row has a different number of commas... Gnnnnnnn](figures/tricky.png){#fig-tricky} -->
-
-<!-- Let's try the usual way first: -->
-
-```{r}
-#| message: FALSE
-#| warning: FALSE
-#| label: tricky
-#| echo: false
-#| eval: false
-library(tidyverse)
-
-raw_conc <- read_csv( # read_csv is the same as read_delim(delim = ",")
-  "ex_data/011023001.#01",
-  col_types = "Tcdddddd",
-  na = "#N/A" # we tell read_csv what NA look like in that file
-)
-```
-
-```{r}
-#| label: rawconc-str
-#| echo: false
-#| eval: false
-
-str(raw_conc, width = 70, strict.width = "cut", give.attr = FALSE)
-```
-
-<!-- It took the column names right, but then of course interpreted all comma as separators, and made a mess. -->
-<!-- Let's see if we can skipped the header and then assemble the columns with left and right side of the decimal point: -->
-
-```{r}
-#| message: FALSE
-#| warning: FALSE
-#| label: tricky2
-#| echo: false
-#| eval: false
-raw_conc <- read_csv(
-  "ex_data/011023001.#01",
-  skip = 1, # this time we skip the row with the column names
-  col_names = FALSE, # we tell read_csv that column names are not provided
-  na = "#N/A" # we tell read_csv what NA looks like in that file
-)
-```
-
-```{r}
-#| label: rawconc-str4
-#| echo: false
-#| eval: false
-
-str(raw_conc, width = 70, strict.width = "cut", give.attr = FALSE)
-```
-
-<!-- The problem now is that CO~2~ concentration was measured every second (with a comma!), while other variable were measured every 10 seconds. -->
-<!-- That means every 10th row has 14 comma separated elements, while the others have only 10. -->
-<!-- Uhhhhhhhhh -->
-
-<!-- At this point, you might want to get the field computer out again and re extract your raw file with a European csv output, or anything that is not comma separated, or set the decimal point as a... point. -->
-<!-- But for the sake of it, let's pretend that it is not an option and solve that issue in R: -->
-
-```{r}
-#| label: tricky3
-#| echo: false
-#| eval: false
-# we read each row of our file as an element of a list
-lines <- readLines("ex_data/011023001.#01")
-lines <- lines[-1] # removing the first element with the column names
-
-# we first deal with the elements where we have those environmental data
-# that were measured every 10 seconds
-linesenv <- lines[seq(1, length(lines), 10)]
-env_df <- read.csv(
-  textConnection(linesenv), # we read the list into a csv
-  header = FALSE, # there is no header
-  colClasses = rep("character", 14)
-  # specifying that those columns are character is important
-  # if read as integer, 06 becomes 6, and when putting columns together,
-  # 400.06 will be read as 400.6, which is wrong
-)
-
-env_df <- env_df |>
-  mutate(
-    datetime = dmy_hms(V1),
-    temp_air = paste(
-      V7, # V7 contains the left side of the decimal point
-      V8, # V8 the right side
-      sep = "." # this time we put it in american format
-    ),
-    temp_air = as.double(temp_air), # now we can make it a double
-    temp_soil = as.double(paste(V9, V10, sep = ".")),
-    co2_conc = as.double(paste(V11, V12, sep = ".")),
-    PAR = as.double(paste(V13, V14, sep = "."))
-  ) |>
-  select(datetime, temp_air, temp_soil, co2_conc, PAR)
-
-# now we do the same with the other elements of the list
-lines_other <- lines[-seq(1, length(lines), 10)]
-other_df <- read.csv(
-  textConnection(lines_other),
-  header = FALSE,
-  colClasses = rep("character", 10)
-)
-
-other_df <- other_df  |>
-  mutate(
-    datetime = dmy_hms(V1),
-    co2_conc = as.double(paste(V8, V9, sep = "."))
-  ) |>
-  select(datetime, co2_conc)
-
-# and finally we do a full join with both
-conc_df <- bind_rows(env_df, other_df) |>
-  arrange(datetime) # I like my dataframes in chronological order
-```
-
-<!-- Et voilà: -->
-```{r}
-#| label: rawconc-str5
-#| echo: false
-#| eval: false
-
-str(conc_df, width = 70, strict.width = "cut", give.attr = FALSE)
-```
-
-<!-- That was a strange mix of tidyverse and base R, and I would definitely try to do some plots to check if the data are making sense (number around 420 are most likely CO~2~ concentration, those between 5 and 20 probably temperature, and soil temperature should be lower than air temperature). -->
-<!-- But it worked... -->
 
 ## The `licoread` R package {#sec-licoread}
 
@@ -2052,6 +1260,7 @@ It follows the file structure logic from LI-COR, meaning that it should be resil
 It first imports all the data as a nested dataframe (to make it lighter) with `licoread`, and then produces a "`fluxible`-friendly" dataframe for the gas of focus with `licoread_to_fluxible`.
 
 ### Importing the data
+
 The data are imported with the `licoread` function.
 It needs the location and the file type (if the folder is mixed, otherwise it is determined automatically).
 The `sample = n` argument will import a random sample of files of size n, which is convenient to test code with a smaller sample of the data.
@@ -2073,10 +1282,12 @@ gas_df_82z <- licoread("ex_data/mixed_files", file_type = "82z")
 ```
 
 ### Making a `fluxible`-friendly dataframe
+
 The `licoread_to_fluxible` function creates a dataframe with `fluxible` default column names.
 Most of the time, LI-COR soil chamber system will measure several gases simultaneously.
 The `focus_gas` argument tells which gas should be present in this dataframe.
 See Appendix -@sec-twogases for the processing of several gases measured simultaneously.
+
 ```{r}
 #| label: fluxible-81x
 #| echo: TRUE
@@ -2131,16 +1342,13 @@ str(ch4_dry, width = 70, strict.width = "cut", give.attr = FALSE)
 
 # Using `fluxible` with two gases measured simultaneously {.appendix #sec-twogases}
 
-<!-- {{< include two-gases.qmd >}} -->
 In this example we will process the `raw_twogases` dataset which contains both CO~2~ and CH~4~ concentrations measured simultaneously.
-<!-- The measurements starting time are in `twogases_record`. -->
 The aim is a single dataset of fluxes in which the CH~4~ fluxes where also discarded when the CO~2~ fluxes were discarded.
 
 The concept is that we will treat the dataset twice, once for each gas, and then join them again in the end.
 Because `f_fluxid` is produced in chronological order based on start datetime in `field_record`, the fluxes measured at the same time have the same `f_fluxid`.
 
 First we use `flux_match` to slice the raw concentration data and attribute a unique ID to each measurement.
-<!-- At this stage it does not matter which concentration columns we use. -->
 
 ```{r}
 #| label: match-twogases
@@ -2276,7 +1484,6 @@ select(-f_slope_corr)
 
 Then we can join the datasets.
 If the final dataset ends up being longer, it probably means that some values in columns that should be equal (`f_temp_air_ave` for example) are in fact not equal, which leads to additional rows when joining the dataframes.
-<!-- It is a good way to check that the two gases have been processed similarly. -->
 
 ```{r}
 #| label: join-twogases
@@ -2315,7 +1522,6 @@ It is of course totally possible to apply other rules, or to just keep the fluxe
 
 # Brief overview of the `exp_zhao18` exponential model {.appendix #sec-theory}
 
-<!-- {{< include theory.qmd >}} -->
 The exponential model `exp_zhao18` is described in @zhaoCalculationDaytimeCO22018.
 They, however, do not describe how to automatically fit this model to real data.
 They recommend using the `optim` function [@rcoreteamLanguageEnvironmentStatistical2024] on the root mean square error (RMSE) for each flux.
@@ -2323,7 +1529,6 @@ This approach requires starting points which are specific to each measurement.
 As `optim` is quite sensitive to the choice of starting points, and that this equation, with four fitting parameters ($C_m$, $a$, $b$, and $t_0$), has a large number of minima, it is critical to approximate the starting points as close as possible to the real values.
 When working flux after flux, it would not be too difficult to manually estimate them.
 `fluxible`, however, aims to automate this step.
-<!-- This section aims at describing how those starting points are automatically determined in the `fluxible` package. -->
 This section describes the steps that are happening in the `flux_fitting_zhao18` function, which is a non-exported function called by `flux_fitting` when using the `exp_zhao18` model.
 
 The gas concentration as a function of time is defined as follows:
@@ -2388,8 +1593,6 @@ $$
 $${#eq-rmse}
 Where $P_i$ are the predicated values and $O_i$ the observed.
 
-<!-- The `optim` function requires starting points for parameters evaluation, which have to be chosen carefully for @eq-zhao to make sense. -->
-<!-- Those starting points can be determined visually while looking at plots of the gas concentration over time, but such a manual step is far below the automatization standards `fluxible` is pretending to. -->
 The raw data are fitted to a series of simpler models whose parameters are used as starting points for `optim`.
 In the following steps, the suffix $\_est$ (for "estimated") indicates the starting point of the corresponding parameter.
 
@@ -2401,8 +1604,6 @@ $t_{z\_est}$ is estimated as the time when observed CO~2~ concentration is the c
 To avoid undesirable effects of outliers, a rolling mean (15 seconds interval by default) is applied to gas concentration data.
 Only the first half of the measurement is used to estimate $t_{z\_est}$ to avoid using gas concentration data situated after a peak or a dip.
 
-<!-- $t_{z\_est}$ is searched in the first half of the flux to avoid looking for it after a peak (or dip) which would not make sense. -->
-<!-- A linear model is applied to $C_{z\_window}$ (15 seconds by default) to obtain $C_0$ -->
 $b_{est}$ can be calculated using $C_{m\_est}$ and $C_0$ and an arbitrary time $t_b=t_0-b_{window}$ (10 seconds as default parameter) and an estimation of $C(t_b)$ (called $C_b$) by looking at the observed CO~2~ value at $t_b$:
 
 $$
@@ -2410,9 +1611,6 @@ b_{est}=\log(|\frac{C_b-C_{m\_est}}{C_0-C_{m\_est}}|) \times \frac{1}{b_{window}
 $$
 
 Once the starting points for C~m~, t~z~ and b are estimated and C~z~ provided, $a(t - t_0)$ can be re-introduced in @eq-licor to correct the part of the flux following a potential peak (or dip).
-<!-- Note that equation X2 is only used to estimate the starting points. -->
-<!-- Note that this step is only applied for the parameters optimization. -->
-<!-- When running `optim()` @eq-zhao is used. -->
 Following the same idea as for $b_{est}$, $a_{est}$ can be calculated using the other estimates and a time window at the end of the flux (the last 10 seconds by default).
 
 $$
@@ -2422,8 +1620,6 @@ $t_a$ being the length of the flux minus $a_{window}$ and $C_a$ the observed CO~
 
 
 Finally, the `optim()` function is run on @eq-rmse with predicted values from @eq-zhao and starting points provided as described above.
-
-
 
 
 
@@ -2578,59 +1774,7 @@ Finally, the `optim()` function is run on @eq-rmse with predicted values from @e
 
 \newpage
 
-<!-- # Comparing the output with other methods {.appendix #sec-comparison} -->
 
-<!-- ## SoilFluxPro -->
-
-<!-- The comparison using LI-COR testing dataset (@fig-sfp) showed some disagreements in detection of fluxes below the minimal detectable flux, which needs to be investigated further. -->
-<!-- The 10 measurements disagreeing the most are plotted individually in FIG -->
-
-
-
-<!-- ## Gasfluxes R package -->
-
-<!-- The gasfluxes R package [@fussGasfluxesGreenhouseGas2024] is where the kappamax method [@huppiRestrictingNonlinearityParameter2018] was initially implemented. -->
-<!-- The `co2_liahovden` dataset available in fluxible was processed using the HM model and the kappamax method in gasfluxes and fluxible (FIG). -->
-<!-- Negative fluxes had to be removed as the gasfluxes R package cannot process them. -->
-
-<!-- # Comparison of models available in fluxible -->
-
-```{r}
-#| label: fluxible-comparison
-#| echo: false
-#| eval: false
-#| include: false
-#| message: FALSE
-#| warning: false
-#| fig-width: 10
-#| fig-height: 8
-#| fig-cap: "Comparison of flux estimates between the different models available in `fluxible`"
-
-library(ggpmisc)
-library(viridis)
-
-fluxible_models <- readRDS("ex_data/fluxible_models.rds")
-
-fluxible_models |>
-  ggplot(aes(zhao_flux, f_flux, color = f_model)) +
-  theme_bw() +
-  geom_point() +
-  geom_abline(slope = 1, intercept = 0) +
-  geom_smooth(
-      method = "lm"
-      ) +
-  stat_poly_line() +
-    stat_poly_eq(use_label("R2", "n")) +
-    labs(
-        # title = "Comparison of flux estimates between the different models available in `fluxible`",
-        x = "Fluxes calculated with the `exp_zhao18` model",
-        y = "Fluxes calculated with other models.",
-        color = "Model"
-    )
-  # facet_grid(~type)
-
-
-```
 
 # List of functions {#sec-listfct}
 
@@ -2662,4 +1806,4 @@ fluxible_models |>
 |`stupeflux`      |Wrapper including `flux_match`, `flux_fitting`, `flux_quality` and `flux_calc` (for performance testing)|
 +-----------------+--------------------------------------------------------------------------------------------------------+
 
-: [List of available functions in `fluxible` 1.3.0.]{.mark} {#tbl-allfcts tbl-colwidths="[25, 75]"}
+: List of available functions in `fluxible` 1.3.0. {#tbl-allfcts tbl-colwidths="[25, 75]"}
