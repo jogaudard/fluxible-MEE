@@ -14,7 +14,6 @@ format:
     number-depth: 4
     keep-tex: true
     colorlinks: false
-    linestretch: 2
 keywords: ecosystem gas fluxes, flux chambers, greenhouse gas emissions, R package, reproducible workflow
 bibliography: /home/jga051/Dropbox/PhD/biblio_phd_zot.bib
 csl: /home/jga051/Documents/01_PhD/methods-in-ecology-and-evolution.csl
