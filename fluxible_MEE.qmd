@@ -71,22 +71,22 @@ aut$get_affiliations() |> cat(sep = "\n\n")
 
 <!-- 171 words -->
 
-## 1
+## 1 {.unnumbered}
 
 Measuring ecosystem gas fluxes is crucial to understanding the dynamics of ecosystem water and energy cycling.
 A common method to measure ecosystem gas fluxes (CO~2~, CH~4~, N~2~O) and to compare experimental treatments is the use of closed-loop chambers.
 
-## 2
+## 2 {.unnumbered}
 
 However, the output data require extensive processing before analysis, making the workflow prone to bias and limiting comparability between studies.
 While there are various methods to process flux data, they lack reproducibility and automation.
 
-## 3
+## 3 {.unnumbered}
 
 The `fluxible` R package provides a reproducible way to process raw gas concentration data from closed-loop chambers into an analysis-ready dataset of ecosystem gas fluxes.
 The processing steps include (1) separating the measurements, (2) fitting a linear, quadratic, or exponential model, (3) assessing the quality of the fit, (4) plotting the fluxes for visual inspection, and (5) calculating the fluxes.
 
-## 4
+## 4 {.unnumbered}
 
 In addition to reproducibility, `fluxible` focuses on homogeneity and automation in data processing, thus reducing the time investment for users while improving comparability across studies.
 
@@ -156,9 +156,9 @@ The core principles of `fluxible` are to (1) treat the entire dataset homogeneou
 
 
 `fluxible` provides a user-friendly and fully transparent workflow to calculate fluxes measured with chambers (@fig-concept), in which the user decides *a priori* on model type and quality control.
-The R package can be installed from CRAN (“The Comprehensive R Archive Network”, n.d.) using `install.packages("fluxible")`, and an example workflow is available in Appendix -@sec-example.
+The R package can be installed from CRAN (“The Comprehensive R Archive Network”, n.d.) using `install.packages("fluxible")`, and an example workflow is available in Appendix A.
 
-![The `fluxible` R package processes raw field measured gas concentration data into analysis-ready fluxes in five steps, including data quality assessment. All functions have the `flux_` prefix. A list of all functions is available in Appendix -@sec-listfct.](figures/concept_figure.png){#fig-concept}
+![The `fluxible` R package processes raw field measured gas concentration data into analysis-ready fluxes in five steps, including data quality assessment. All functions have the `flux_` prefix. A list of all functions is available in Appendix F.](figures/concept_figure.png){#fig-concept}
 
 
 
@@ -168,9 +168,9 @@ The R package can be installed from CRAN (“The Comprehensive R Archive Network
 The gas concentration dataset is produced by a logger or a gas analyser and contains at minimum a datetime column and a gas concentration column for all the measurements (i. e. a time serie of gas concentration that will result in a single flux).
 The second file must contain a column with the start of each measurement (in datetime format) and identifiers (e.g. the plot IDs) for each measurement.
 Both inputs can contain other columns, which will be kept.
-Appendix -@sec-dataprep provides guidelines for importing the data, both for the continuous logging and "one file per flux" approaches.
+Appendix B provides guidelines for importing the data, both for the continuous logging and "one file per flux" approaches.
 As the data processing and quality control is done for the entire dataset, we recommend carefully considering what constitutes one dataset (e.g., splitting different campaigns in separate datasets) before starting the `fluxible` workflow.
-When measuring different gases simultaneously, we also recommend making a separate dataset for each gas, as the quality checks require different thresholds (see Appendix -@sec-twogases for a multi-gas example).
+When measuring different gases simultaneously, we also recommend making a separate dataset for each gas, as the quality checks require different thresholds (see Appendix C for a multi-gas example).
 
 The final output of the `fluxible` workflow is a dataset containing: clean fluxes (@fig-concept), timestamps of the start of the measurements, measurement identifiers provided in the measurements record, and any other variables present in either input.
 
@@ -185,9 +185,9 @@ The `flux_match` function also attributes each flux a unique fluxID (related to 
 The model $C(t)$ is fitted to the data using the `flux_fitting` function (@fig-concept), which provides a choice of models (@tbl-fits) and allows the user to prune the start and/or the end of the measurements.
 The slope (`f_slope` in `fluxible`) used for the flux calculation is the derivative of $C(t)$ at $t_0$ (`t_zero` in `fluxible`), $C'(t_0)$.
 The derivative $C'(t)$ is a function of time in the quadratic and exponential models, thus requesting the user to set $t_0$ (except `exp_zhao18` which includes $t_0$ as a fitting parameter).
-We recommend the use of the models `exp_zhao18` (uncertainties around $t_0$) or `exp_tz` (fixed $t_0$) because they are more robust (shown in Appendix -@sec-theory).
+We recommend the use of the models `exp_zhao18` (uncertainties around $t_0$) or `exp_tz` (fixed $t_0$) because they are more robust (shown in Appendix D).
 Other models are provided for backwards compatibility and user flexibility.
-The automatic fitting of the `exp_zhao18` model [@zhaoCalculationDaytimeCO22018] is described in Appendix -@sec-theory.
+The automatic fitting of the `exp_zhao18` model [@zhaoCalculationDaytimeCO22018] is described in Appendix D.
 All models allow positive and negative fluxes, and will produce a negative slope if the concentration decreases over time (ecosystem uptake) and a positive slope if the concentration increases over time (ecosystem loss).
 Internally, the models use relative time since the measurement start, which accounts for missing data and inconsistent gas concentration measurement frequency.
 
@@ -279,7 +279,7 @@ $${#eq-flux}
 
 The `flux_calc` function can handle $mmol\ mol^{-1}$, $ppm$, $ppb$ or $ppt$ for input of gas concentration and Celsius, Kelvin, and Fahrenheit for temperature.
 The units of the calculated flux is decided by the user and should be in the form $amount\ surface^{-1}\ time^{-1}$.
-Amount can be $mol$, $mmol$, $\mu mol$, $nmol$ or $pmol$; surface can be $m^2$, $dm^2$ or $cm^2$; time can be $day$, $hour$, $minute$ or $second$ (example in Appendix -@sec-excalc).
+Amount can be $mol$, $mmol$, $\mu mol$, $nmol$ or $pmol$; surface can be $m^2$, $dm^2$ or $cm^2$; time can be $day$, $hour$, $minute$ or $second$ (example in Appendix A.5).
 Environmental data that were measured simultaneously as the gas concentration (e.g., soil temperature) can be nested or summarised as mean, sum, or median, or kept, assuming that their value is constant within each measurement (e.g., elevation).
 
 
@@ -290,7 +290,7 @@ Environmental data that were measured simultaneously as the gas concentration (e
 The `fluxible` workflow was validated by comparing a testing dataset of ecosystem gas flux measurements provided by LI-COR (processed by them in SoilFluxPro; SFP; LI-COR Biosciences, Lincoln, NE, USA) with the corresponding raw dataset processed with `fluxible`.
 A subset of the CH~4~ measurements (3925 out of 16689) required a different fitting window than the rest of the dataset as there was significant noise at the start of the measurements.
 Therefore those data were processed separately before being included in the comparison at the final stage.
-Strategies to inspect such large datasets are discussed in Appendix -@sec-example.
+Strategies to inspect such large datasets are discussed in Appendix A.
 
 The two methods show a strong correlation (R > 0.9) for all gases and instruments (@fig-sfp).
 However, some of the data could not be fitted with the HM model due to the absence of curvature, hence the lower n for the exponential and no exponential fitting for CH~4~ (@fig-sfp facet a).
@@ -477,7 +477,7 @@ Finally, `fluxible` is the only package that processes other environmental data 
 
 <!-- 139 words -->
 
-The `fluxible` R package provides a flexible way of processing raw data from flux chambers using a variety of different models and quality checks (see Appendix -@sec-example for a detailed example).
+The `fluxible` R package provides a flexible way of processing raw data from flux chambers using a variety of different models and quality checks (see Appendix A for a detailed example).
 The main advantages of `fluxible` are (1) a homogeneous workflow to process ecosystem gas fluxes, (2) a choice of models and flexibility in quality control, and (3) a transparent and reproducible workflow that can be integrated in an Open Science pipeline.
 
 
@@ -513,7 +513,7 @@ Feature requests are always welcome, and assistance through customised import fu
 |`exp_hm`    |$C_m + (C_0 - C_m) * \exp(-b * t)$                        |$b * (C_m - C_0) * \exp(-b * t_0)$    |
 +------------+----------------------------------------------------------+--------------------------------------+
 
-: \normalsize Models available in the `flux_fitting` function and their slope at $t_0$. The slope parameter $t_0$ must be specified by the user in all models, except for the `linear` and `exp_zhao18` models. $C_m$ is the maximum mixing ratio at equilibrium, $C_0$ is the initial concentration, and $a$ and $b$ are fitting parameters. A more detailed explanation is available in Appendix -@sec-theory. {#tbl-fits}
+: \normalsize Models available in the `flux_fitting` function and their slope at $t_0$. The slope parameter $t_0$ must be specified by the user in all models, except for the `linear` and `exp_zhao18` models. $C_m$ is the maximum mixing ratio at equilibrium, $C_0$ is the initial concentration, and $a$ and $b$ are fitting parameters. A more detailed explanation is available in Appendix D. {#tbl-fits}
 
 \normalsize
 
@@ -552,7 +552,7 @@ Feature requests are always welcome, and assistance through customised import fu
 |`no_slope`     |Model could not be fit to gas concentration data.      |`NA`             |
 +---------------+-------------------------------------------------------+-----------------+
 
-: \normalsize Overview of the quality flags. The full decision scheme for each model is described in Appendix -@sec-qualityflags. {#tbl-flags tbl-colwidths="[20,55,25]"}
+: \normalsize Overview of the quality flags. The full decision scheme for each model is described in Appendix E. {#tbl-flags tbl-colwidths="[20,55,25]"}
 
 \normalsize
 
