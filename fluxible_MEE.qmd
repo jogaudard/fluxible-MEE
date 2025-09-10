@@ -9,7 +9,6 @@ format:
         \usepackage{lscape}
         \newcommand{\blandscape}{\begin{landscape}}
         \newcommand{\elandscape}{\end{landscape}}
-        \usepackage{lineno}
     number-sections: true
     number-depth: 4
     keep-tex: true
