@@ -1,6 +1,7 @@
 ---
 title: Supporting Information for fluxible R package manuscript
 author: Joseph Gaudard
+# format: docx
 format:
   pdf:
     include-in-header: 
