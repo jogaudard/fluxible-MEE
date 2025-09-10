@@ -133,7 +133,7 @@ Field-based ecosystem gas flux measurements. [-@fig-soil]) soil respiration is m
 There are two main pathways to determine $C(t)$.
 The theoretical approach taken by @kutzbachCO2FluxDetermination2007 includes the relevant flux processes (e. g. photosynthesis, plant respiration, soil respiration) in one equation.
 An alternative approach is to empirically find a mathematical expression that adequately describes the shape of the fluxes.
-The latter approach has the advantage of being easier to implement and optimize when fitting a model to real data.
+The latter approach has the advantage of being easier to implement and optimise when fitting a model to real data.
 The most common is the Hutchinson-Mosier model [HM\; @hutchinsonImprovedSoilCover1981].
 As the HM model cannot fit linear data, implementing it relies on the user deciding if a flux should be fitted with a linear or the HM model [`HMR` R package\; @HMRpackage].
 An improvement was the kappamax method [@huppiRestrictingNonlinearityParameter2018], which automates this step, making the workflow reproducible.
@@ -160,7 +160,7 @@ The R package can be installed from CRAN (“The Comprehensive R Archive Network
 ## Input and output
 
 `fluxible` requires two inputs: a dataset of the gas concentration over time and a separate metadata file recording  the start time of each measurement (@fig-concept).
-The gas concentration dataset is produced by a logger or a gas analyser and contains at minimum a datetime column and a gas concentration column for all the measurements (i. e. a time serie of gas concentration that will result in a single flux).
+The gas concentration dataset is produced by a logger or a gas analyser and contains at minimum a datetime column and a gas concentration column for all the measurements (i. e. a time series of gas concentration that will result in a single flux).
 The second file must contain a column with the start of each measurement (in datetime format) and identifiers (e.g. the plot IDs) for each measurement.
 Both inputs can contain other columns, which will be kept.
 Appendix B provides guidelines for importing the data, both for the continuous logging and "one file per flux" approaches.
@@ -217,7 +217,7 @@ The user can override the outcome of the quality assessment by providing a vecto
 #| eval: true
 #| fig-width: 8
 #| fig-height: 4
-#| fig-cap: "Example output of the `flux_plot` function. With quality flags and diagnostics from `flux_quality`, the slope at $t_0$ (continuous line), the model fit (dashed line), the linear fit (dotted line), and the raw gas concentration (dots). The colours show the quality flags (green for `ok`, red for `discard`, and purple for `zero` with default settings) and cuts (same colour as `discard`). The gray vertical line indicates $t_0$ (a fitting parameter when using the `exp_zhao18` model, otherwise user defined in `flux_fitting`). The g-factor is calculated as slope/linear slope, and b is the b parameter inside the exponential model. The concentration unit in this example is in ppm, and depends on the data input. The purpose of this visualization is quality control and to reduce the complexity of these plots the units are not shown. The facet IDs are fluxIDs by default, but can be customised using the `f_facetid` argument."
+#| fig-cap: "Example output of the `flux_plot` function. With quality flags and diagnostics from `flux_quality`, the slope at $t_0$ (continuous line), the model fit (dashed line), the linear fit (dotted line), and the raw gas concentration (dots). The colours show the quality flags (green for `ok`, red for `discard`, and purple for `zero` with default settings) and cuts (same colour as `discard`). The gray vertical line indicates $t_0$ (a fitting parameter when using the `exp_zhao18` model, otherwise user defined in `flux_fitting`). The g-factor is calculated as slope/linear slope, and b is the b parameter inside the exponential model. The concentration unit in this example is in ppm, and depends on the data input. The purpose of this visualisation is quality control and to reduce the complexity of these plots the units are not shown. The facet IDs are fluxIDs by default, but can be customised using the `f_facetid` argument."
 
 library(fluxible)
 
@@ -289,7 +289,7 @@ Strategies to inspect such large datasets are discussed in Appendix A.
 
 The two methods show a strong correlation (R > 0.9) for all gases and instruments (@fig-sfp).
 However, some of the data could not be fitted with the HM model due to the absence of curvature, hence the lower n for the exponential and no exponential fitting for CH~4~ (@fig-sfp facet a).
-It was decided here to strictly apply the HM model for comparison purpose, as it is the closest to the SFP exponential workflow, but this strongly supports our recommandation to use the model presented in @zhaoCalculationDaytimeCO22018 (i. e. `exp_zhao18` or `exp_tz`).
+It was decided here to strictly apply the HM model for comparison purpose, as it is the closest to the SFP exponential workflow, but this strongly supports our recommendation to use the model presented in @zhaoCalculationDaytimeCO22018 (i. e. `exp_zhao18` or `exp_tz`).
 
 
 ```{r}
@@ -476,7 +476,7 @@ The `fluxible` R package provides a flexible way of processing raw data from flu
 The main advantages of `fluxible` are (1) a homogeneous workflow to process ecosystem gas fluxes, (2) a choice of models and flexibility in quality control, and (3) a transparent and reproducible workflow that can be integrated in an Open Science pipeline.
 
 
-Further developments of `fluxible` include (1) a segmentation tool to automatically select the focus window, based on residuals or on environmental variables, and (2) extanding the workflow to transform the concentration in mol per volume before fitting a model, which would account for temperature changes during the measurements better.
+Further developments of `fluxible` include (1) a segmentation tool to automatically select the focus window, based on residuals or on environmental variables, and (2) extending the workflow to transform the concentration in mole per volume before fitting a model, which would account for temperature changes during the measurements better.
 Feature requests are always welcome, and assistance through customised import functions is also possible.
 
 

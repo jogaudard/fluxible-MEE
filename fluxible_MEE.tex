@@ -335,7 +335,7 @@ processes (e. g. photosynthesis, plant respiration, soil respiration) in
 one equation. An alternative approach is to empirically find a
 mathematical expression that adequately describes the shape of the
 fluxes. The latter approach has the advantage of being easier to
-implement and optimize when fitting a model to real data. The most
+implement and optimise when fitting a model to real data. The most
 common is the Hutchinson-Mosier model (HM; Hutchinson \& Mosier, 1981).
 As the HM model cannot fit linear data, implementing it relies on the
 user deciding if a flux should be fitted with a linear or the HM model
@@ -391,7 +391,7 @@ concentration over time and a separate metadata file recording the start
 time of each measurement (Figure~\ref{fig-concept}). The gas
 concentration dataset is produced by a logger or a gas analyser and
 contains at minimum a datetime column and a gas concentration column for
-all the measurements (i. e. a time serie of gas concentration that will
+all the measurements (i. e. a time series of gas concentration that will
 result in a single flux). The second file must contain a column with the
 start of each measurement (in datetime format) and identifiers (e.g.~the
 plot IDs) for each measurement. Both inputs can contain other columns,
@@ -511,7 +511,7 @@ vertical line indicates \(t_0\) (a fitting parameter when using the
 \texttt{flux\_fitting}). The g-factor is calculated as slope/linear
 slope, and b is the b parameter inside the exponential model. The
 concentration unit in this example is in ppm, and depends on the data
-input. The purpose of this visualization is quality control and to
+input. The purpose of this visualisation is quality control and to
 reduce the complexity of these plots the units are not shown. The facet
 IDs are fluxIDs by default, but can be customised using the
 \texttt{f\_facetid} argument.}
@@ -565,7 +565,7 @@ hence the lower n for the exponential and no exponential fitting for
 CH\textsubscript{4} (Figure~\ref{fig-sfp} facet a). It was decided here
 to strictly apply the HM model for comparison purpose, as it is the
 closest to the SFP exponential workflow, but this strongly supports our
-recommandation to use the model presented in Zhao et al. (2018) (i. e.
+recommendation to use the model presented in Zhao et al. (2018) (i. e.
 \texttt{exp\_zhao18} or \texttt{exp\_tz}).
 
 \begin{figure}
@@ -626,8 +626,8 @@ can be integrated in an Open Science pipeline.
 
 Further developments of \texttt{fluxible} include (1) a segmentation
 tool to automatically select the focus window, based on residuals or on
-environmental variables, and (2) extanding the workflow to transform the
-concentration in mol per volume before fitting a model, which would
+environmental variables, and (2) extending the workflow to transform the
+concentration in mole per volume before fitting a model, which would
 account for temperature changes during the measurements better. Feature
 requests are always welcome, and assistance through customised import
 functions is also possible.
