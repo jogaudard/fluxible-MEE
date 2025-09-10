@@ -169,7 +169,6 @@
 \usepackage{lscape}
 \newcommand{\blandscape}{\begin{landscape}}
 \newcommand{\elandscape}{\end{landscape}}
-\usepackage{lineno}
 \KOMAoption{captions}{tableheading}
 \makeatletter
 \@ifpackageloaded{tcolorbox}{}{\usepackage[skins,breakable]{tcolorbox}}
@@ -234,13 +233,14 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
-  pdftitle={Supporting Information for fluxible R package},
+  pdftitle={Supporting Information for fluxible R package manuscript},
+  pdfauthor={Joseph Gaudard},
   hidelinks,
   pdfcreator={LaTeX via pandoc}}
 
 
-\title{Supporting Information for fluxible R package}
-\author{}
+\title{Supporting Information for fluxible R package manuscript}
+\author{Joseph Gaudard}
 \date{2025-09-10}
 
 \begin{document}
@@ -531,7 +531,7 @@ name of the \texttt{slopes\_df} object will be used
 (\texttt{flags\_liahovden} in our case). The pdf file will be saved in a
 folder named \texttt{f\_quality\_plots}.
 
-\begin{tcolorbox}[enhanced jigsaw, title={Handling lots of data?}, breakable, coltitle=black, rightrule=.15mm, toprule=.15mm, toptitle=1mm, left=2mm, arc=.35mm, colback=white, colframe=quarto-callout-tip-color-frame, opacitybacktitle=0.6, colbacktitle=quarto-callout-tip-color!10!white, titlerule=0mm, bottomrule=.15mm, leftrule=.75mm, opacityback=0, bottomtitle=1mm]
+\begin{tcolorbox}[enhanced jigsaw, breakable, colback=white, coltitle=black, toprule=.15mm, titlerule=0mm, rightrule=.15mm, toptitle=1mm, opacitybacktitle=0.6, colbacktitle=quarto-callout-tip-color!10!white, bottomtitle=1mm, title={Handling lots of data?}, arc=.35mm, colframe=quarto-callout-tip-color-frame, bottomrule=.15mm, leftrule=.75mm, left=2mm, opacityback=0]
 
 Automated chambers produce a lot of data, and visually inspecting all
 the fluxes might not be a reasonable option. In such cases, it is
@@ -598,7 +598,7 @@ is achieved with \texttt{force\_zero\ =\ 101}. Several fluxIDs can be
 provided to the \texttt{force\_} arguments by providing a vector:
 \texttt{force\_zero\ =\ c(100,\ 101)}.
 
-\begin{tcolorbox}[enhanced jigsaw, title={Redefining the focus window}, breakable, coltitle=black, rightrule=.15mm, toprule=.15mm, toptitle=1mm, left=2mm, arc=.35mm, colback=white, colframe=quarto-callout-tip-color-frame, opacitybacktitle=0.6, colbacktitle=quarto-callout-tip-color!10!white, titlerule=0mm, bottomrule=.15mm, leftrule=.75mm, opacityback=0, bottomtitle=1mm]
+\begin{tcolorbox}[enhanced jigsaw, breakable, colback=white, coltitle=black, toprule=.15mm, titlerule=0mm, rightrule=.15mm, toptitle=1mm, opacitybacktitle=0.6, colbacktitle=quarto-callout-tip-color!10!white, bottomtitle=1mm, title={Redefining the focus window}, arc=.35mm, colframe=quarto-callout-tip-color-frame, bottomrule=.15mm, leftrule=.75mm, left=2mm, opacityback=0]
 
 It might be sometime necessary to redefine the focus window (the portion
 of the flux used for model fitting) in case of consistent anomalies at
@@ -700,7 +700,7 @@ in this example.}
 
 \end{figure}%
 
-\begin{tcolorbox}[enhanced jigsaw, title={The importance of reporting}, breakable, coltitle=black, rightrule=.15mm, toprule=.15mm, toptitle=1mm, left=2mm, arc=.35mm, colback=white, colframe=quarto-callout-tip-color-frame, opacitybacktitle=0.6, colbacktitle=quarto-callout-tip-color!10!white, titlerule=0mm, bottomrule=.15mm, leftrule=.75mm, opacityback=0, bottomtitle=1mm]
+\begin{tcolorbox}[enhanced jigsaw, breakable, colback=white, coltitle=black, toprule=.15mm, titlerule=0mm, rightrule=.15mm, toptitle=1mm, opacitybacktitle=0.6, colbacktitle=quarto-callout-tip-color!10!white, bottomtitle=1mm, title={The importance of reporting}, arc=.35mm, colframe=quarto-callout-tip-color-frame, bottomrule=.15mm, leftrule=.75mm, left=2mm, opacityback=0]
 
 Because of \texttt{fluxible}`s flexibility in choice of models, quality
 thresholds and focus window selection, it is crucial that users report

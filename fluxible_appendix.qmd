@@ -1,5 +1,6 @@
 ---
-title: Supporting Information for fluxible R package
+title: Supporting Information for fluxible R package manuscript
+author: Joseph Gaudard
 format:
   pdf:
     include-in-header: 
@@ -7,7 +8,6 @@ format:
         \usepackage{lscape}
         \newcommand{\blandscape}{\begin{landscape}}
         \newcommand{\elandscape}{\end{landscape}}
-        \usepackage{lineno}
     number-sections: true
     number-depth: 4
     keep-tex: true
@@ -15,6 +15,13 @@ format:
 bibliography: /home/jga051/Dropbox/PhD/biblio_phd_zot.bib
 csl: /home/jga051/Documents/01_PhD/emerald-harvard.csl
 date: today
+crossref:
+  fig-title: Figure
+  fig-prefix: Figure
+  fig-labels: arabic
+  appendix-title: "Appendix:"
+  appendix-delim: ":"
+  sec-prefix: ""
 ---
 
 ```{=tex}
