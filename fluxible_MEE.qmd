@@ -71,12 +71,23 @@ aut$get_affiliations() |> cat(sep = "\n\n")
 
 <!-- 171 words -->
 
+## 1
+
 Measuring ecosystem gas fluxes is crucial to understanding the dynamics of ecosystem water and energy cycling.
 A common method to measure ecosystem gas fluxes (CO~2~, CH~4~, N~2~O) and to compare experimental treatments is the use of closed-loop chambers.
+
+## 2
+
 However, the output data require extensive processing before analysis, making the workflow prone to bias and limiting comparability between studies.
 While there are various methods to process flux data, they lack reproducibility and automation.
+
+## 3
+
 The `fluxible` R package provides a reproducible way to process raw gas concentration data from closed-loop chambers into an analysis-ready dataset of ecosystem gas fluxes.
 The processing steps include (1) separating the measurements, (2) fitting a linear, quadratic, or exponential model, (3) assessing the quality of the fit, (4) plotting the fluxes for visual inspection, and (5) calculating the fluxes.
+
+## 4
+
 In addition to reproducibility, `fluxible` focuses on homogeneity and automation in data processing, thus reducing the time investment for users while improving comparability across studies.
 
 **Keywords**: ecosystem gas fluxes, flux chambers, greenhouse gas emissions, R package, reproducible workflow
