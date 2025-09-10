@@ -607,13 +607,7 @@ Feature requests are always welcome, and assistance through customised import fu
 \renewcommand{\thesection}{\Alph{section}} -->
 
 
-```{=tex}
-\appendix
-\renewcommand{\thefigure}{A\arabic{figure}}
-\renewcommand{\thetable}{A\arabic{table}}
-\setcounter{figure}{0}
-\setcounter{table}{0}
-```
+
 
 <!-- # Supplements {.appendix} -->
 

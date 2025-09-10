@@ -234,15 +234,24 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
+  pdftitle={Supporting Information for fluxible R package},
   hidelinks,
   pdfcreator={LaTeX via pandoc}}
 
 
+\title{Supporting Information for fluxible R package}
 \author{}
 \date{2025-09-10}
 
 \begin{document}
+\maketitle
 
+
+\appendix
+\renewcommand{\thefigure}{A\arabic{figure}}
+\renewcommand{\thetable}{A\arabic{table}}
+\setcounter{figure}{0}
+\setcounter{table}{0}
 
 \section{Detailed example}\label{sec-example}
 
@@ -335,7 +344,7 @@ as a fitting parameter (its implementation is described in Appendix
 \(t_0\) is \texttt{exp\_tz}. Other available models are: \texttt{linear}
 for a linear fit, \texttt{quadratic} for a quadratic fit, and
 \texttt{exp\_hm} for the original HM model (Hutchinson and Mosier, 1981
-; see \textbf{?@tbl-fits} for an overview of the available models).
+; see Table 1 for an overview of the available models).
 
 The \texttt{conc\_df} argument is the dataframe with gas concentration,
 date and time, and start and end of each measurement, ideally produced
@@ -384,13 +393,12 @@ principle is that the user sets thresholds on diagnostics (depending on
 the model used) to flag the measurements according to the quality of the
 data and the model fit. Those quality flags are then used to provide
 \texttt{f\_slope\_corr}, a column containing the advised slope to use
-for calculation (\textbf{?@tbl-flags}). The \texttt{force\_} arguments
-allow the user to override this automatic flagging by providing a vector
-of fluxIDs. The \texttt{ambient\_conc} and \texttt{error} arguments are
-used to detect measurements starting outside of a reasonable range (the
-mean of the three first gas concentration data points is used,
-independently from the fitting window). The minimal detectable slope is
-calculated as
+for calculation Table 2). The \texttt{force\_} arguments allow the user
+to override this automatic flagging by providing a vector of fluxIDs.
+The \texttt{ambient\_conc} and \texttt{error} arguments are used to
+detect measurements starting outside of a reasonable range (the mean of
+the three first gas concentration data points is used, independently
+from the fitting window). The minimal detectable slope is calculated as
 \(\frac{2 \times \text{instr error}}{\text{length of measurement}}\) and
 is used to detect slopes that should be replaced by zero. Other
 arguments are described in the function documentation (displayed with
@@ -523,7 +531,7 @@ name of the \texttt{slopes\_df} object will be used
 (\texttt{flags\_liahovden} in our case). The pdf file will be saved in a
 folder named \texttt{f\_quality\_plots}.
 
-\begin{tcolorbox}[enhanced jigsaw, bottomtitle=1mm, toprule=.15mm, arc=.35mm, coltitle=black, colframe=quarto-callout-tip-color-frame, breakable, colbacktitle=quarto-callout-tip-color!10!white, opacitybacktitle=0.6, toptitle=1mm, titlerule=0mm, title={Handling lots of data?}, opacityback=0, colback=white, leftrule=.75mm, bottomrule=.15mm, rightrule=.15mm, left=2mm]
+\begin{tcolorbox}[enhanced jigsaw, title={Handling lots of data?}, breakable, coltitle=black, rightrule=.15mm, toprule=.15mm, toptitle=1mm, left=2mm, arc=.35mm, colback=white, colframe=quarto-callout-tip-color-frame, opacitybacktitle=0.6, colbacktitle=quarto-callout-tip-color!10!white, titlerule=0mm, bottomrule=.15mm, leftrule=.75mm, opacityback=0, bottomtitle=1mm]
 
 Automated chambers produce a lot of data, and visually inspecting all
 the fluxes might not be a reasonable option. In such cases, it is
@@ -590,7 +598,7 @@ is achieved with \texttt{force\_zero\ =\ 101}. Several fluxIDs can be
 provided to the \texttt{force\_} arguments by providing a vector:
 \texttt{force\_zero\ =\ c(100,\ 101)}.
 
-\begin{tcolorbox}[enhanced jigsaw, bottomtitle=1mm, toprule=.15mm, arc=.35mm, coltitle=black, colframe=quarto-callout-tip-color-frame, breakable, colbacktitle=quarto-callout-tip-color!10!white, opacitybacktitle=0.6, toptitle=1mm, titlerule=0mm, title={Redefining the focus window}, opacityback=0, colback=white, leftrule=.75mm, bottomrule=.15mm, rightrule=.15mm, left=2mm]
+\begin{tcolorbox}[enhanced jigsaw, title={Redefining the focus window}, breakable, coltitle=black, rightrule=.15mm, toprule=.15mm, toptitle=1mm, left=2mm, arc=.35mm, colback=white, colframe=quarto-callout-tip-color-frame, opacitybacktitle=0.6, colbacktitle=quarto-callout-tip-color!10!white, titlerule=0mm, bottomrule=.15mm, leftrule=.75mm, opacityback=0, bottomtitle=1mm]
 
 It might be sometime necessary to redefine the focus window (the portion
 of the flux used for model fitting) in case of consistent anomalies at
@@ -692,7 +700,7 @@ in this example.}
 
 \end{figure}%
 
-\begin{tcolorbox}[enhanced jigsaw, bottomtitle=1mm, toprule=.15mm, arc=.35mm, coltitle=black, colframe=quarto-callout-tip-color-frame, breakable, colbacktitle=quarto-callout-tip-color!10!white, opacitybacktitle=0.6, toptitle=1mm, titlerule=0mm, title={The importance of reporting}, opacityback=0, colback=white, leftrule=.75mm, bottomrule=.15mm, rightrule=.15mm, left=2mm]
+\begin{tcolorbox}[enhanced jigsaw, title={The importance of reporting}, breakable, coltitle=black, rightrule=.15mm, toprule=.15mm, toptitle=1mm, left=2mm, arc=.35mm, colback=white, colframe=quarto-callout-tip-color-frame, opacitybacktitle=0.6, colbacktitle=quarto-callout-tip-color!10!white, titlerule=0mm, bottomrule=.15mm, leftrule=.75mm, opacityback=0, bottomtitle=1mm]
 
 Because of \texttt{fluxible}`s flexibility in choice of models, quality
 thresholds and focus window selection, it is crucial that users report
@@ -708,8 +716,8 @@ sharing clean and documented code.
 \subsection{Flux calculation}\label{sec-excalc}
 
 Now that we are satisfied with the fit, we can calculate fluxes with
-\texttt{flux\_calc}. The calculation (\textbf{?@eq-flux}) is using the
-slope, which can either be \texttt{f\_slope} (provided by
+\texttt{flux\_calc}. The calculation (Equation 1) is using the slope,
+which can either be \texttt{f\_slope} (provided by
 \texttt{flux\_fitting} and not quality checked) or
 \texttt{f\_slope\_corr} which is the recommended slope after quality
 check with \texttt{flux\_quality}. Here the volume is defined as a
@@ -1905,6 +1913,9 @@ inside \texttt{flux\_calc}) \\
 \texttt{flux\_fitting}, \texttt{flux\_quality} and \texttt{flux\_calc}
 (for performance testing) \\
 \end{longtable}
+
+\section*{References}\label{references}
+\addcontentsline{toc}{section}{References}
 
 \phantomsection\label{refs}
 \begin{CSLReferences}{1}{0}

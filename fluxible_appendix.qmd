@@ -1,4 +1,5 @@
 ---
+title: Supporting Information for fluxible R package
 format:
   pdf:
     include-in-header: 
@@ -15,6 +16,14 @@ bibliography: /home/jga051/Dropbox/PhD/biblio_phd_zot.bib
 csl: /home/jga051/Documents/01_PhD/emerald-harvard.csl
 date: today
 ---
+
+```{=tex}
+\appendix
+\renewcommand{\thefigure}{A\arabic{figure}}
+\renewcommand{\thetable}{A\arabic{table}}
+\setcounter{figure}{0}
+\setcounter{table}{0}
+```
 
 # Detailed example {.appendix #sec-example}
 
@@ -90,7 +99,7 @@ We fit a model and obtain the slope at $t_0$, which is needed for the flux calcu
 In this example we use the `exp_zhao18` model [@zhaoCalculationDaytimeCO22018], which is the default setting as it is more robust and recent.
 The `exp_zhao18` is a mix of an exponential and linear model - thus fitting all fluxes independently from curvature - and includes $t_0$ as a fitting parameter (its implementation is described in Appendix -@sec-theory).
 A similar model but with the option to manually set $t_0$ is `exp_tz`.
-Other available models are: `linear` for a linear fit, `quadratic` for a quadratic fit, and `exp_hm` for the original HM model [@hutchinsonImprovedSoilCover1981 \; see @tbl-fits for an overview of the available models].
+Other available models are: `linear` for a linear fit, `quadratic` for a quadratic fit, and `exp_hm` for the original HM model [@hutchinsonImprovedSoilCover1981 \; see Table 1 for an overview of the available models].
 
 The `conc_df` argument is the dataframe with gas concentration, date and time, and start and end of each measurement, ideally produced with `flux_match` (see Appendix -@sec-dataprep for requirements to bypass `flux_match`).
 Then `f_conc` and `f_datetime` are, similarly as in `flux_match`, the gas concentration and corresponding datetime column.
@@ -126,7 +135,7 @@ slopes_liahovden <- flux_fitting(
 The function `flux_quality` is used to provide diagnostics about the quality of the fit, potentially advising to discard some measurements or replace them by zero.
 The full decision scheme and all quality flags are described in Appendix -@sec-qualityflags.
 The main principle is that the user sets thresholds on diagnostics (depending on the model used) to flag the measurements according to the quality of the data and the model fit.
-Those quality flags are then used to provide `f_slope_corr`, a column containing the advised slope to use for calculation (@tbl-flags).
+Those quality flags are then used to provide `f_slope_corr`, a column containing the advised slope to use for calculation Table 2).
 The `force_` arguments allow the user to override this automatic flagging by providing a vector of fluxIDs.
 The `ambient_conc` and `error` arguments are used to detect measurements starting outside of a reasonable range (the mean of the three first gas concentration data points is used, independently from the fitting window).
 The minimal detectable slope is calculated as $\frac{2 \times \text{instr error}}{\text{length of measurement}}$ and is used to detect slopes that should be replaced by zero.
@@ -320,7 +329,7 @@ Note that all those parameters are functions' arguments, making reporting as sim
 ## Flux calculation {#sec-excalc}
 
 Now that we are satisfied with the fit, we can calculate fluxes with `flux_calc`.
-The calculation (@eq-flux) is using the slope, which can either be `f_slope` (provided by `flux_fitting` and not quality checked) or `f_slope_corr` which is the recommended slope after quality check with `flux_quality`.
+The calculation (Equation 1) is using the slope, which can either be `f_slope` (provided by `flux_fitting` and not quality checked) or `f_slope_corr` which is the recommended slope after quality check with `flux_quality`.
 Here the volume is defined as a constant for all the measurements but it is also possible to provide the volume as a separate column (`setup_volume`).
 The `cols_ave` arguments indicates which column(s), i.e. the environmental data, should be averaged for each flux.
 When setting the argument `cut = TRUE` (default), the same cut that was applied in `flux_fitting` will be used.
@@ -1219,3 +1228,5 @@ Finally, the `optim()` function is run on @eq-rmse with predicted values from @e
 +-----------------+--------------------------------------------------------------------------------------------------------+
 
 : List of available functions in `fluxible` 1.3.0. {#tbl-allfcts tbl-colwidths="[25, 75]"}
+
+# References {.unnumbered}
