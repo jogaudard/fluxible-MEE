@@ -92,10 +92,40 @@
 % Set default figure placement to htbp
 \def\fps@figure{htbp}
 \makeatother
+% definitions for citeproc citations
+\NewDocumentCommand\citeproctext{}{}
+\NewDocumentCommand\citeproc{mm}{%
+  \begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
+\makeatletter
+ % allow citations to break across lines
+ \let\@cite@ofmt\@firstofone
+ % avoid brackets around text for \cite:
+ \def\@biblabel#1{}
+ \def\@cite#1#2{{#1\if@tempswa , #2\fi}}
+\makeatother
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newenvironment{CSLReferences}[2] % #1 hanging-indent, #2 entry-spacing
+ {\begin{list}{}{%
+  \setlength{\itemindent}{0pt}
+  \setlength{\leftmargin}{0pt}
+  \setlength{\parsep}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+   \setlength{\leftmargin}{\cslhangindent}
+   \setlength{\itemindent}{-1\cslhangindent}
+  \fi
+  % set entry spacing
+  \setlength{\itemsep}{#2\baselineskip}}}
+ {\end{list}}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
 
-\usepackage{lscape}
-\newcommand{\blandscape}{\begin{landscape}}
-\newcommand{\elandscape}{\end{landscape}}
 \KOMAoption{captions}{tableheading}
 \makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
@@ -161,7 +191,7 @@ from closed-loop chambers in an automated and reproducible way}
 \makeatother
 \subtitle{\texttt{fluxible}: ecosystem gas fluxes calculations}
 \author{}
-\date{2025-09-09}
+\date{2025-09-10}
 
 \begin{document}
 \maketitle
@@ -170,36 +200,16 @@ from closed-loop chambers in an automated and reproducible way}
 \textbf{Key-words:} ecosystem gas fluxes, flux chambers, greenhouse gas
 emissions, R package, reproducible workflow
 
-Joseph
-Gaudard\textsuperscript{1,}*\href{https://orcid.org/0000-0002-6989-7624}{\hspace{3pt}\includegraphics[width=\linewidth,height=0.16667in,keepaspectratio]{./usr/local/lib/R/site-library/plume/icons/orcid.pdf}\hspace{3pt}},
-Julia
-Chacon-Labella\textsuperscript{2,3}\href{https://orcid.org/0000-0002-6787-1295}{\hspace{3pt}\includegraphics[width=\linewidth,height=0.16667in,keepaspectratio]{./usr/local/lib/R/site-library/plume/icons/orcid.pdf}\hspace{3pt}},
-Hilary Rose
-Dawson\textsuperscript{4,5}\href{https://orcid.org/0000-0003-4613-762X}{\hspace{3pt}\includegraphics[width=\linewidth,height=0.16667in,keepaspectratio]{./usr/local/lib/R/site-library/plume/icons/orcid.pdf}\hspace{3pt}},
-Brian J
-Enquist\textsuperscript{6}\href{https://orcid.org/0000-0002-6124-7096}{\hspace{3pt}\includegraphics[width=\linewidth,height=0.16667in,keepaspectratio]{./usr/local/lib/R/site-library/plume/icons/orcid.pdf}\hspace{3pt}},
-Richard J
-Telford\textsuperscript{1,}*\href{https://orcid.org/0000-0001-9826-3076}{\hspace{3pt}\includegraphics[width=\linewidth,height=0.16667in,keepaspectratio]{./usr/local/lib/R/site-library/plume/icons/orcid.pdf}\hspace{3pt}},
-Joachim P
-Töpper\textsuperscript{7}\href{https://orcid.org/0000-0002-6996-7223}{\hspace{3pt}\includegraphics[width=\linewidth,height=0.16667in,keepaspectratio]{./usr/local/lib/R/site-library/plume/icons/orcid.pdf}\hspace{3pt}},
-Jonas
-Trepel\textsuperscript{8}\href{https://orcid.org/0009-0004-7358-9204}{\hspace{3pt}\includegraphics[width=\linewidth,height=0.16667in,keepaspectratio]{./usr/local/lib/R/site-library/plume/icons/orcid.pdf}\hspace{3pt}},
-Vigdis
-Vandvik\textsuperscript{1}\href{https://orcid.org/0000-0003-4651-4798}{\hspace{3pt}\includegraphics[width=\linewidth,height=0.16667in,keepaspectratio]{./usr/local/lib/R/site-library/plume/icons/orcid.pdf}\hspace{3pt}},
-Marta
-Baumane\textsuperscript{9,10}\href{https://orcid.org/0000-0003-0184-9252}{\hspace{3pt}\includegraphics[width=\linewidth,height=0.16667in,keepaspectratio]{./usr/local/lib/R/site-library/plume/icons/orcid.pdf}\hspace{3pt}},
-Kristine
-Birkeli\textsuperscript{1}\href{https://orcid.org/0000-0003-3980-4420}{\hspace{3pt}\includegraphics[width=\linewidth,height=0.16667in,keepaspectratio]{./usr/local/lib/R/site-library/plume/icons/orcid.pdf}\hspace{3pt}},
-Mukhlish Jamal Musa
-Holle\textsuperscript{11}\href{https://orcid.org/0000-0003-1899-2135}{\hspace{3pt}\includegraphics[width=\linewidth,height=0.16667in,keepaspectratio]{./usr/local/lib/R/site-library/plume/icons/orcid.pdf}\hspace{3pt}},
-Jason R
-Hupp\textsuperscript{12}\href{https://orcid.org/0000-0003-4505-5390}{\hspace{3pt}\includegraphics[width=\linewidth,height=0.16667in,keepaspectratio]{./usr/local/lib/R/site-library/plume/icons/orcid.pdf}\hspace{3pt}},
-Paul Efren
-Santos-Andrade\textsuperscript{13}\href{https://orcid.org/0000-0002-6635-0375}{\hspace{3pt}\includegraphics[width=\linewidth,height=0.16667in,keepaspectratio]{./usr/local/lib/R/site-library/plume/icons/orcid.pdf}\hspace{3pt}},
-Tin Widyani
-Satriawan\textsuperscript{14}\href{https://orcid.org/0000-0003-4580-9973}{\hspace{3pt}\includegraphics[width=\linewidth,height=0.16667in,keepaspectratio]{./usr/local/lib/R/site-library/plume/icons/orcid.pdf}\hspace{3pt}},
-Aud H
-Halbritter\textsuperscript{1}\href{https://orcid.org/0000-0003-2597-6328}{\hspace{3pt}\includegraphics[width=\linewidth,height=0.16667in,keepaspectratio]{./usr/local/lib/R/site-library/plume/icons/orcid.pdf}\hspace{3pt}}
+Joseph Gaudard\textsuperscript{1,}*, Richard J
+Telford\textsuperscript{1}, Julia Chacon-Labella\textsuperscript{2,3},
+Hilary Rose Dawson\textsuperscript{4,5}, Brian J
+Enquist\textsuperscript{6}, Joachim P Töpper\textsuperscript{7}, Jonas
+Trepel\textsuperscript{8}, Vigdis Vandvik\textsuperscript{1}, Marta
+Baumane\textsuperscript{9,10}, Kristine Birkeli\textsuperscript{1},
+Mukhlish Jamal Musa Holle\textsuperscript{11}, Jason R
+Hupp\textsuperscript{12}, Paul Efren Santos-Andrade\textsuperscript{13},
+Tin Widyani Satriawan\textsuperscript{14}, Aud H
+Halbritter\textsuperscript{1}
 
 \textsuperscript{1}Department of Biological Sciences and Bjerknes Center
 for Climate Research, University of Bergen, Norway
@@ -243,8 +253,7 @@ Cusco, Perú
 \textsuperscript{14}Department of Geography, National University of
 Singapore, Singapore
 
-*Correspondence to: joseph.gaudard@uib.no (Joseph Gaudard),
-Richard.Telford@uib.no (Richard J Telford)
+*Correspondence to: joseph.gaudard@uib.no (Joseph Gaudard)
 
 \section*{Acknowledgements}\label{acknowledgements}
 \addcontentsline{toc}{section}{Acknowledgements}
@@ -266,16 +275,15 @@ Adam Klimes for his help in analytics and R coding.
 \section*{Data availability}\label{data-availability}
 \addcontentsline{toc}{section}{Data availability}
 
-The data used in the validation (Section 3) and those used in the data
-preparation example (Appendix B) can be downloaded from Open Science
-Framework: \href{https://osf.io/srj24/}{osf.io/srj24}. The data for the
-detailed example (Appendix A) and the workflow with two gases (Appendix
-C) are part of \texttt{fluxible}. The code of the package is available
-on GitHub:
-\href{https://github.com/Plant-Functional-Trait-Course/fluxible}{github.com/Plant-Functional-Trait-Course/fluxible}.
-The code for the validation section and figures production is available
-on GitHub:
-\href{https://github.com/jogaudard/fluxible-MEE}{github.com/jogaudard/fluxible-MEE}.
+Data used for the validation (Section 3) and in the data preparation
+example (Appendix B) available via
+\url{https://doi.org/10.17605/OSF.IO/SRJ24} (Gaudard, 2025). Data used
+in the detailed example (Appendix A) and the workflow with two gases
+(Appendix C) are part of \texttt{fluxible}. Code of the package
+(\texttt{fluxible\ v1.3.1}) available via
+\url{https://doi.org/10.5281/zenodo.17093479} (Gaudard and Telford,
+2025). Code for the validation section and figure production available
+via \url{https://doi.org/10.5281/zenodo.17093752}.
 
 \section*{Conflict of interest}\label{conflict-of-interest}
 \addcontentsline{toc}{section}{Conflict of interest}
@@ -289,10 +297,10 @@ All students and collaborators in the courses and projects where the
 conceptualization of the \texttt{fluxible} R package was discussed were
 offered to participate in the manuscript.
 
-Joseph Gaudard, Julia Chacon-Labella, Hilary Rose Dawson, Brian J
-Enquist, Richard J Telford, Joachim P Töpper, Jonas Trepel, Vigdis
-Vandvik, Marta Baumane, Kristine Birkeli, Mukhlish Jamal Musa Holle,
-Paul Efren Santos-Andrade, Tin Widyani Satriawan and Aud H Halbritter:
+Joseph Gaudard, Richard J Telford, Julia Chacon-Labella, Hilary Rose
+Dawson, Brian J Enquist, Joachim P Töpper, Jonas Trepel, Vigdis Vandvik,
+Marta Baumane, Kristine Birkeli, Mukhlish Jamal Musa Holle, Paul Efren
+Santos-Andrade, Tin Widyani Satriawan and Aud H Halbritter:
 Conceptualization; Joseph Gaudard, Brian J Enquist, Joachim P Töpper,
 Vigdis Vandvik and Aud H Halbritter: Funding acquisition; Joseph
 Gaudard: Project administration; Joseph Gaudard and Richard J Telford:
@@ -300,10 +308,23 @@ Software; Richard J Telford, Joachim P Töpper, Vigdis Vandvik and Aud H
 Halbritter: Supervision; Joseph Gaudard, Julia Chacon-Labella, Hilary
 Rose Dawson, Brian J Enquist, Joachim P Töpper, Jonas Trepel, Vigdis
 Vandvik and Aud H Halbritter: Writing - original draft; Joseph Gaudard,
-Julia Chacon-Labella, Hilary Rose Dawson, Brian J Enquist, Richard J
-Telford, Joachim P Töpper, Jonas Trepel, Vigdis Vandvik, Marta Baumane,
+Richard J Telford, Julia Chacon-Labella, Hilary Rose Dawson, Brian J
+Enquist, Joachim P Töpper, Jonas Trepel, Vigdis Vandvik, Marta Baumane,
 Kristine Birkeli, Mukhlish Jamal Musa Holle, Jason R Hupp, Tin Widyani
 Satriawan and Aud H Halbritter: Writing - review \& editing
+
+\phantomsection\label{refs}
+\begin{CSLReferences}{1}{0}
+\bibitem[\citeproctext]{ref-gaudardFluxible2025}
+Gaudard, J. (2025), {``Fluxible''}, OSF, available
+at:\url{https://doi.org/10.17605/OSF.IO/SRJ24}.
+
+\bibitem[\citeproctext]{ref-josephgaudardPlantFunctionalTraitCourseFluxibleFluxible2025}
+Gaudard, J. and Telford, R. (2025),
+{``Plant-{Functional-Trait-Course}/fluxible: fluxible''}, Zenodo,
+September, available at:\url{https://doi.org/10.5281/ZENODO.17093479}.
+
+\end{CSLReferences}
 
 
 

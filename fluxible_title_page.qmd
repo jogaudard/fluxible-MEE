@@ -1,20 +1,12 @@
 ---
 title: "`fluxible`: an R package to process ecosystem gas fluxes from closed-loop chambers in an automated and reproducible way"
 subtitle: "`fluxible`: ecosystem gas fluxes calculations"
-# format: docx # tbl-packages need to be passed as comments for docx
 format:
   pdf:
-#  aog-article-pdf: 
-    include-in-header: 
-      text: |
-        \usepackage{lscape}
-        \newcommand{\blandscape}{\begin{landscape}}
-        \newcommand{\elandscape}{\end{landscape}}
     number-sections: true
     number-depth: 4
     keep-tex: true
     colorlinks: false
-    # linestretch: 2
 keywords: ecosystem gas fluxes, flux chambers, R package, reproducible workflow
 bibliography: /home/jga051/Dropbox/PhD/biblio_phd_zot.bib
 csl: /home/jga051/Documents/01_PhD/emerald-harvard.csl
@@ -41,10 +33,10 @@ options(tidyverse.quiet = TRUE)
 tbl_authors <- read_sheet(gs4_find("authors_fluxible"))
 
 aut <- Plume$new(tbl_authors)
-aut$set_corresponding_authors(1, 5)
+aut$set_corresponding_authors(1)
 ```
 
-`r aut$get_author_list("^a,^co")`
+`r aut$get_author_list("^a,^c")`
 
 ```{r}
 #| results: asis
@@ -61,10 +53,11 @@ The PFTC6 course was funded under the Research Council of Norway projects RECITE
 We also would like to thank Vincent Belde who, as an early user of `fluxible` during his master thesis, came up with valuable improvement suggestions, and Adam Klimes for his help in analytics and R coding.
 
 # Data availability {.unnumbered}
-The data used in the validation (Section 3) and those used in the data preparation example (Appendix B) can be downloaded from Open Science Framework: [osf.io/srj24](https://osf.io/srj24/).
-The data for the detailed example (Appendix A) and the workflow with two gases (Appendix C) are part of `fluxible`.
-The code of the package is available on GitHub: [github.com/Plant-Functional-Trait-Course/fluxible](https://github.com/Plant-Functional-Trait-Course/fluxible).
-The code for the validation section and figures production is available on GitHub: [github.com/jogaudard/fluxible-MEE](https://github.com/jogaudard/fluxible-MEE).
+
+Data used for the validation (Section 3) and in the data preparation example (Appendix B) available via [https://doi.org/10.17605/OSF.IO/SRJ24](https://doi.org/10.17605/OSF.IO/SRJ24) [@gaudardFluxible2025].
+Data used in the detailed example (Appendix A) and the workflow with two gases (Appendix C) are part of `fluxible`.
+Code of the package (`fluxible v1.3.1`) available via [https://doi.org/10.5281/zenodo.17093479](https://doi.org/10.5281/zenodo.17093479) [@josephgaudardPlantFunctionalTraitCourseFluxibleFluxible2025].
+Code for the validation section and figure production available via [https://doi.org/10.5281/zenodo.17093752](https://doi.org/10.5281/zenodo.17093752).
 
 # Conflict of interest {.unnumbered}
 The authors declare no conflict of interest.

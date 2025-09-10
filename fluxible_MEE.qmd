@@ -9,6 +9,7 @@ format:
         \usepackage{lscape}
         \newcommand{\blandscape}{\begin{landscape}}
         \newcommand{\elandscape}{\end{landscape}}
+        \graphicspath{{./}{./yourdoc_files/figure-latex/}}
     number-sections: true
     number-depth: 4
     keep-tex: true
@@ -18,6 +19,7 @@ bibliography: /home/jga051/Dropbox/PhD/biblio_phd_zot.bib
 csl: /home/jga051/Documents/01_PhD/methods-in-ecology-and-evolution.csl
 date: today
 execute:
+  fig-path: ""
   echo: false
 crossref:
   fig-title: Figure
@@ -120,12 +122,12 @@ Indeed, the chamber volume often varies due to microtopography, and this variati
 
 
 ::: {#fig-chambers layout-nrow=2}
-![](figures/soil_chamber.jpg){#fig-soil fig-align="left" width=98%}
+![](figure_1a.jpg){#fig-soil fig-align="left" width=98%}
 
-![](figures/threed_chamber.jpg){#fig-threed fig-align="right" width=98%}
+![](figure_1b.jpg){#fig-threed fig-align="right" width=98%}
 
 
-![](figures/tent_peru.jpg){#fig-tent fig-align="center" width=200%}
+![](figure_1c.jpg){#fig-tent fig-align="center" width=200%}
 
 Field-based ecosystem gas flux measurements. [-@fig-soil]) soil respiration is measured using a PVC pipe chamber. [-@fig-threed]) closed-loop plexiglass chamber to measure ecosystem carbon and water fluxes. The chamber has sensors to measure different environmental data, which should be processed simultaneously with the fluxes. [-@fig-tent]) Flux tent used for measurements in ecosystems with taller vegetation.
 :::
@@ -153,7 +155,7 @@ The core principles of `fluxible` are to (1) treat the entire dataset homogeneou
 `fluxible` provides a user-friendly and fully transparent workflow to calculate fluxes measured with chambers (@fig-concept), in which the user decides *a priori* on model type and quality control.
 The R package can be installed from CRAN (“The Comprehensive R Archive Network”, n.d.) using `install.packages("fluxible")`, and an example workflow is available in Appendix A.
 
-![The `fluxible` R package processes raw field measured gas concentration data into analysis-ready fluxes in five steps, including data quality assessment. All functions have the `flux_` prefix. A list of all functions is available in Appendix F.](figures/concept_figure.png){#fig-concept}
+![The `fluxible` R package processes raw field measured gas concentration data into analysis-ready fluxes in five steps, including data quality assessment. All functions have the `flux_` prefix. A list of all functions is available in Appendix F.](figure_2.png){#fig-concept}
 
 
 
