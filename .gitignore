@@ -5,3 +5,6 @@ graphics
 *.pdf
 *.zip
 *.docx
+
+!fig-plot-1.pdf
+!fig-sfp-1.pdf

@@ -57,7 +57,7 @@ We also would like to thank Vincent Belde who, as an early user of `fluxible` du
 Data used for the validation (Section 3) and in the data preparation example (Appendix B) available via [https://doi.org/10.17605/OSF.IO/SRJ24](https://doi.org/10.17605/OSF.IO/SRJ24) [@gaudardFluxible2025].
 Data used in the detailed example (Appendix A) and the workflow with two gases (Appendix C) are part of `fluxible`.
 Code of the package (`fluxible v1.3.1`) available via [https://doi.org/10.5281/zenodo.17093479](https://doi.org/10.5281/zenodo.17093479) [@josephgaudardPlantFunctionalTraitCourseFluxibleFluxible2025].
-Code for the validation section and figure production available via [https://doi.org/10.5281/zenodo.17093752](https://doi.org/10.5281/zenodo.17093752).
+Code for the validation section and figure production available via [https://doi.org/10.5281/zenodo.17093752](https://doi.org/10.5281/zenodo.17093752) [@josephgaudardJogaudardFluxibleMEEFluxiblemee2025].
 
 # Conflict of interest {.unnumbered}
 The authors declare no conflict of interest.
